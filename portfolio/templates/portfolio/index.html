@@ -403,6 +403,12 @@
   justify-content: center;
   font-size: 16px;
 }
+.contact-link-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+}
 
 /* Form */
 .form-group { margin-bottom: 16px; }
@@ -520,9 +526,10 @@ Where I spend most of my thinking: AI. Generative AI, Agentic AI, large language
       <div class="about-text fade-up">
         <h2 class="section-title">Building things <em>that scale</em></h2>
         <p>
-          I'm a backend software engineer with 3 years of hands-on experience crafting
-          production-grade Python/Django applications. From clinical research portals to
+          I'm a full stack software engineer and AI engineer with 3 years of hands-on experience crafting
+          production-grade web applications. From clinical research portals to
           real-time chat systems, I love solving complex problems with clean, maintainable code.
+          I use AI to build smarter — turning Generative AI and Agentic AI into real, production-ready systems that solve problems people actually have.
         </p>
         <p>
           Currently based in Paderborn, Germany, where I'm pursuing my Master's in Computer
@@ -877,19 +884,27 @@ Where I spend most of my thinking: AI. Generative AI, Agentic AI, large language
 
         <div class="contact-links">
           <a href="mailto:ah.saim786@gmail.com" class="contact-link">
-            <div class="contact-link-icon">✉️</div>
+            <div class="contact-link-icon">
+              <img src="{% static 'portfolio/img/email.png' %}" alt="Email" />
+            </div>
             ah.saim786@gmail.com
           </a>
           <a href="https://linkedin.com/in/saimahmad-/" target="_blank" class="contact-link">
-            <div class="contact-link-icon">💼</div>
+            <div class="contact-link-icon">
+              <img src="{% static 'portfolio/img/linkedin.png' %}" alt="LinkedIn" />
+            </div>
             linkedin.com/in/saimahmad-/
           </a>
           <a href="https://github.com/SaimiAh" target="_blank" class="contact-link">
-            <div class="contact-link-icon">🐙</div>
+            <div class="contact-link-icon">
+              <img src="{% static 'portfolio/img/github.png' %}" alt="GitHub" />
+            </div>
             github.com/SaimiAh
           </a>
           <a href="tel:+4917514641640" class="contact-link">
-            <div class="contact-link-icon">📱</div>
+            <div class="contact-link-icon">
+              <img src="{% static 'portfolio/img/phone.png' %}" alt="Phone" />
+            </div>
             (+49) 175 1464164
           </a>
         </div>
