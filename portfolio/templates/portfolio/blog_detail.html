@@ -1,0 +1,27 @@
+{% extends 'portfolio/base.html' %}
+{% block title %}{{ post.title }} — Saim Ahmad{% endblock %}
+{% block content %}
+<article style="padding:80px 0;">
+  <div class="container" style="max-width:740px;">
+    <a href="{% url 'blog_list' %}" class="btn btn-outline fade-up" style="margin-bottom:40px;display:inline-flex;">← All Posts</a>
+
+    <header class="fade-up">
+      <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:12px;">{{ post.created_at|date:"d M Y" }}</p>
+      <h1 style="font-size:clamp(28px,5vw,48px);font-weight:800;line-height:1.15;margin-bottom:16px;">{{ post.title }}</h1>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:40px;">
+        {% for tag in post.tag_list %}<span class="tag">{{ tag }}</span>{% endfor %}
+      </div>
+      <hr style="border:none;border-top:1px solid var(--border);margin-bottom:40px;">
+    </header>
+
+    <div class="fade-up" style="color:var(--muted);font-size:16px;line-height:1.8;">
+      {{ post.content|safe }}
+    </div>
+
+    <div style="margin-top:64px;padding-top:32px;border-top:1px solid var(--border);display:flex;gap:16px;flex-wrap:wrap;" class="fade-up">
+      <a href="{% url 'blog_list' %}" class="btn btn-outline">← All Posts</a>
+      <a href="/#contact" class="btn btn-primary">Get in Touch</a>
+    </div>
+  </div>
+</article>
+{% endblock %}

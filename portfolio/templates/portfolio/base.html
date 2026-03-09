@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Saim Ahmad — Software Developer{% endblock %}</title>
+  <meta name="description" content="Saim Ahmad — Backend Software Engineer specialising in Python, Django, Docker, and AWS. Based in Paderborn, Germany." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── RESET & TOKENS ──────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:        #070b12;
+      --bg2:       #0c1220;
+      --bg3:       #111827;
+      --accent:    #00e5ff;
+      --accent2:   #a855f7;
+      --glow:      rgba(0, 229, 255, 0.18);
+      --text:      #e2e8f0;
+      --muted:     #64748b;
+      --card:      rgba(255,255,255,0.035);
+      --border:    rgba(255,255,255,0.07);
+      --radius:    12px;
+      --mono:      'JetBrains Mono', monospace;
+      --sans:      'Outfit', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── THREE.JS CANVAS ─────────────────────── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── NAV ─────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 64px;
+      background: rgba(7, 11, 18, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 15px;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      min-width: 135px;
+      display: inline-block;
+    }
+    .cursor {
+      display: inline-block;
+      color: var(--accent);
+      animation: blink .7s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .nav-logo span { color: var(--text); }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color .2s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    .nav-cta {
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 7px 20px;
+      border: 1px solid var(--accent);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      transition: background .2s, color .2s;
+    }
+
+    .nav-cta:hover { background: var(--accent); color: var(--bg); }
+
+    /* hamburger */
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; }
+
+    /* ── MAIN CONTENT ────────────────────────── */
+    main { position: relative; z-index: 1; padding-top: 64px; }
+
+    /* ── SECTIONS ────────────────────────────── */
+    section { padding: 96px 0; }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 48px;
+      color: var(--text);
+    }
+
+    .section-title em {
+      font-style: normal;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── CARDS ───────────────────────────────── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: border-color .3s, transform .3s, box-shadow .3s;
+    }
+
+    .card:hover {
+      border-color: rgba(0, 229, 255, 0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0,229,255,0.08);
+    }
+
+    /* ── BUTTONS ─────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all .25s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .btn-primary:hover {
+      background: #33edff;
+      box-shadow: 0 0 24px rgba(0, 229, 255, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    /* ── TAG CHIPS ───────────────────────────── */
+    .tag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: rgba(0, 229, 255, 0.08);
+      color: var(--accent);
+      border: 1px solid rgba(0, 229, 255, 0.18);
+      letter-spacing: 0.04em;
+    }
+
+    .tag.purple {
+      background: rgba(168, 85, 247, 0.08);
+      color: var(--accent2);
+      border-color: rgba(168, 85, 247, 0.18);
+    }
+
+    /* ── FOOTER ──────────────────────────────── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 40px 32px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      font-family: var(--mono);
+    }
+
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* ── CHATBOT WIDGET ──────────────────────── */
+    .chat-bubble-btn {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 200;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 24px rgba(0,229,255,0.4);
+      transition: transform .25s, box-shadow .25s;
+    }
+
+    .chat-bubble-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 32px rgba(0,229,255,0.6);
+    }
+
+    .chat-bubble-btn svg { width: 24px; height: 24px; fill: var(--bg); }
+
+    .chat-window {
+      position: fixed;
+      bottom: 104px;
+      right: 32px;
+      z-index: 200;
+      width: 360px;
+      height: 520px;
+      background: var(--bg2);
+      border: 1px solid rgba(0, 229, 255, 0.25);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,229,255,0.1);
+      transform: scale(0.9) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .25s;
+    }
+
+    .chat-window.open {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .chat-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--bg);
+      flex-shrink: 0;
+    }
+
+    .chat-header-info h4 { font-size: 14px; font-weight: 600; }
+    .chat-header-info p { font-size: 11px; color: #22c55e; }
+
+    .chat-close {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      transition: color .2s;
+    }
+
+    .chat-close:hover { color: var(--text); }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .msg {
+      max-width: 82%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      line-height: 1.5;
+      animation: msgIn .25s ease;
+    }
+
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg.bot {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+      align-self: flex-start;
+    }
+
+    .msg.user {
+      background: linear-gradient(135deg, rgba(0,229,255,0.2), rgba(168,85,247,0.15));
+      border: 1px solid rgba(0,229,255,0.2);
+      border-bottom-right-radius: 4px;
+      align-self: flex-end;
+    }
+
+    .msg.typing span {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--muted);
+      animation: dot .9s infinite;
+    }
+
+    .msg.typing span:nth-child(2) { animation-delay: .2s; }
+    .msg.typing span:nth-child(3) { animation-delay: .4s; }
+
+    @keyframes dot {
+      0%, 60%, 100% { transform: translateY(0); opacity: .4; }
+      30% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    .chat-input-row {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 13.5px;
+      padding: 9px 14px;
+      resize: none;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .chat-input:focus { border-color: rgba(0,229,255,0.4); }
+
+    .chat-send {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: var(--accent);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background .2s, transform .2s;
+    }
+
+    .chat-send:hover { background: #33edff; transform: scale(1.05); }
+    .chat-send svg { width: 16px; height: 16px; fill: var(--bg); }
+
+    /* ── ANIMATIONS ──────────────────────────── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ──────────────────────────── */
+    @media (max-width: 768px) {
+      nav { padding: 0 24px; }
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: flex; }
+      section { padding: 64px 0; }
+      .container { padding: 0 20px; }
+      .chat-window { width: calc(100vw - 40px); right: 20px; }
+    }
+
+    /* ── MOBILE NAV MENU ─────────────────────── */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background: rgba(7,11,18,0.98);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+    }
+
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { font-size: 22px; color: var(--text); text-decoration: none; font-weight: 600; }
+    .mobile-menu a:hover { color: var(--accent); }
+    .mobile-menu .close-menu { position: absolute; top: 20px; right: 24px; font-size: 28px; color: var(--muted); cursor: pointer; background: none; border: none; }
+
+    {% block extra_css %}{% endblock %}
+  </style>
+</head>
+<body>
+
+<!-- ── THREE.JS CANVAS ── -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- ── NAVIGATION ── -->
+<nav id="navbar">
+  <a href="/" class="nav-logo" id="nav-logo"></a>
+
+  <ul class="nav-links">
+    <li><a href="/#about">About</a></li>
+    <li><a href="/#skills">Skills</a></li>
+    <li><a href="/#projects">Projects</a></li>
+    <li><a href="/#experience">Experience</a></li>
+    <li><a href="/blog/">Blog</a></li>
+    <li><a href="/resume/">Resume</a></li>
+    <li><a href="/#contact">Contact</a></li>
+  </ul>
+
+  <a href="/#contact" class="nav-cta">Hire Me</a>
+  <button class="hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobile-menu">
+  <button class="close-menu" id="close-menu">✕</button>
+  <a href="/#about" class="mobile-link">About</a>
+  <a href="/#skills" class="mobile-link">Skills</a>
+  <a href="/#projects" class="mobile-link">Projects</a>
+  <a href="/#experience" class="mobile-link">Experience</a>
+  <a href="/blog/" class="mobile-link">Blog</a>
+  <a href="/resume/" class="mobile-link">Resume</a>
+  <a href="/#contact" class="mobile-link">Contact</a>
+</div>
+
+<!-- ── MAIN CONTENT ── -->
+<main>{% block content %}{% endblock %}</main>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <p>Built with Django &amp; ☕ by <a href="https://github.com/SaimiAh">Saim Ahmad</a> &mdash; Paderborn, Germany</p>
+</footer>
+
+<!-- ── AI CHATBOT ── -->
+<button class="chat-bubble-btn" id="chat-toggle" aria-label="Chat with Saim's AI">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 2H4C2.897 2 2 2.897 2 4v18l4-4h14c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2zm-2 11H6v-2h12v2zm0-4H6V7h12v2z"/>
+  </svg>
+</button>
+
+<div class="chat-window" id="chat-window" role="dialog" aria-label="Chat with Saim's AI assistant">
+  <div class="chat-header">
+    <div class="chat-avatar">SA</div>
+    <div class="chat-header-info">
+      <h4>Saim's AI</h4>
+      <p>● Online</p>
+    </div>
+    <button class="chat-close" id="chat-close" aria-label="Close chat">✕</button>
+  </div>
+
+  <div class="chat-messages" id="chat-messages">
+    <div class="msg bot">
+      👋 Hi! I'm Saim's AI assistant. Ask me anything about his skills, projects, or experience!
+    </div>
+  </div>
+
+  <div class="chat-input-row">
+    <textarea class="chat-input" id="chat-input" placeholder="Ask me anything…" rows="1"></textarea>
+    <button class="chat-send" id="chat-send" aria-label="Send message">
+      <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ── THREE.JS ── -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+// ─────────────────────────────────────────────
+// THREE.JS PARTICLE NETWORK
+// ─────────────────────────────────────────────
+(function () {
+  const canvas = document.getElementById('bg-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+  camera.position.z = 600;
+
+  // Particles
+  const PARTICLE_COUNT = 120;
+  const positions = [];
+  const velocities = [];
+  const geometry = new THREE.BufferGeometry();
+  const posArray = new Float32Array(PARTICLE_COUNT * 3);
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const x = (Math.random() - 0.5) * window.innerWidth * 1.4;
+    const y = (Math.random() - 0.5) * window.innerHeight * 1.4;
+    const z = (Math.random() - 0.5) * 400;
+    positions.push({ x, y, z });
+    velocities.push({
+      x: (Math.random() - 0.5) * 0.3,
+      y: (Math.random() - 0.5) * 0.3,
+      z: 0,
+    });
+    posArray[i * 3]     = x;
+    posArray[i * 3 + 1] = y;
+    posArray[i * 3 + 2] = z;
+  }
+
+  geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+  const dotMat = new THREE.PointsMaterial({
+    color: 0x00e5ff,
+    size: 2.5,
+    transparent: true,
+    opacity: 0.7,
+    sizeAttenuation: true,
+  });
+
+  const points = new THREE.Points(geometry, dotMat);
+  scene.add(points);
+
+  // Lines between close particles
+  const lineGeo = new THREE.BufferGeometry();
+  const maxLines = PARTICLE_COUNT * PARTICLE_COUNT;
+  const linePositions = new Float32Array(maxLines * 6);
+  const lineColors    = new Float32Array(maxLines * 6);
+  lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3).setUsage(THREE.DynamicDrawUsage));
+  lineGeo.setAttribute('color',    new THREE.BufferAttribute(lineColors, 3).setUsage(THREE.DynamicDrawUsage));
+
+  const lineMat = new THREE.LineSegments(lineGeo, new THREE.LineBasicMaterial({
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.35,
+  }));
+  scene.add(lineMat);
+
+  const MAX_DIST = 180;
+  let mouseX = 0, mouseY = 0;
+
+  document.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX - window.innerWidth  / 2) * 0.4;
+    mouseY = (e.clientY - window.innerHeight / 2) * -0.4;
+  });
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    const posAttr = geometry.attributes.position;
+    let lineIdx = 0;
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      positions[i].x += velocities[i].x;
+      positions[i].y += velocities[i].y;
+
+      const hw = window.innerWidth  * 0.7;
+      const hh = window.innerHeight * 0.7;
+      if (Math.abs(positions[i].x) > hw) velocities[i].x *= -1;
+      if (Math.abs(positions[i].y) > hh) velocities[i].y *= -1;
+
+      posAttr.array[i * 3]     = positions[i].x;
+      posAttr.array[i * 3 + 1] = positions[i].y;
+      posAttr.array[i * 3 + 2] = positions[i].z;
+
+      for (let j = i + 1; j < PARTICLE_COUNT; j++) {
+        const dx = positions[i].x - positions[j].x;
+        const dy = positions[i].y - positions[j].y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+
+        if (dist < MAX_DIST) {
+          const t = 1 - dist / MAX_DIST;
+          linePositions[lineIdx * 6]     = positions[i].x;
+          linePositions[lineIdx * 6 + 1] = positions[i].y;
+          linePositions[lineIdx * 6 + 2] = positions[i].z;
+          linePositions[lineIdx * 6 + 3] = positions[j].x;
+          linePositions[lineIdx * 6 + 4] = positions[j].y;
+          linePositions[lineIdx * 6 + 5] = positions[j].z;
+
+          // cyan → purple gradient based on index
+          const r = 0 + t * 0.66;
+          const g = 0.9 * t;
+          const b = 1.0;
+          lineColors[lineIdx * 6]     = r; lineColors[lineIdx * 6 + 1] = g; lineColors[lineIdx * 6 + 2] = b;
+          lineColors[lineIdx * 6 + 3] = r; lineColors[lineIdx * 6 + 4] = g; lineColors[lineIdx * 6 + 5] = b;
+          lineIdx++;
+        }
+      }
+    }
+
+    lineGeo.setDrawRange(0, lineIdx * 2);
+    lineGeo.attributes.position.needsUpdate = true;
+    lineGeo.attributes.color.needsUpdate    = true;
+    posAttr.needsUpdate = true;
+
+    // Mouse parallax
+    camera.position.x += (mouseX - camera.position.x) * 0.04;
+    camera.position.y += (mouseY - camera.position.y) * 0.04;
+    camera.lookAt(scene.position);
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+})();
+
+// ─────────────────────────────────────────────
+// FADE-UP INTERSECTION OBSERVER
+// ─────────────────────────────────────────────
+document.querySelectorAll('.fade-up').forEach(el => {
+  new IntersectionObserver(([entry]) => {
+    if (entry.isIntersecting) { el.classList.add('visible'); }
+  }, { threshold: 0.12 }).observe(el);
+});
+
+// ─────────────────────────────────────────────
+// MOBILE NAV
+// ─────────────────────────────────────────────
+const hamburger   = document.getElementById('hamburger');
+const mobileMenu  = document.getElementById('mobile-menu');
+const closeMenu   = document.getElementById('close-menu');
+
+hamburger.addEventListener('click', () => mobileMenu.classList.add('open'));
+closeMenu.addEventListener('click', () => mobileMenu.classList.remove('open'));
+document.querySelectorAll('.mobile-link').forEach(a => {
+  a.addEventListener('click', () => mobileMenu.classList.remove('open'));
+});
+
+// ─────────────────────────────────────────────
+// AI CHATBOT
+// ─────────────────────────────────────────────
+(function () {
+  const toggle    = document.getElementById('chat-toggle');
+  const win       = document.getElementById('chat-window');
+  const closeBtn  = document.getElementById('chat-close');
+  const input     = document.getElementById('chat-input');
+  const sendBtn   = document.getElementById('chat-send');
+  const msgsEl    = document.getElementById('chat-messages');
+  let history     = [];
+  let waiting     = false;
+
+  toggle.addEventListener('click', () => {
+    win.classList.toggle('open');
+    if (win.classList.contains('open')) input.focus();
+  });
+
+  closeBtn.addEventListener('click', () => win.classList.remove('open'));
+
+  function appendMsg(text, role) {
+    const div = document.createElement('div');
+    div.className = 'msg ' + role;
+    div.textContent = text;
+    msgsEl.appendChild(div);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+    return div;
+  }
+
+  function appendTyping() {
+    const div = document.createElement('div');
+    div.className = 'msg bot typing';
+    div.innerHTML = '<span></span><span></span><span></span>';
+    msgsEl.appendChild(div);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+    return div;
+  }
+
+  async function send() {
+    if (waiting) return;
+    const text = input.value.trim();
+    if (!text) return;
+
+    input.value = '';
+    input.style.height = 'auto';
+    appendMsg(text, 'user');
+    history.push({ role: 'user', content: text });
+
+    waiting = true;
+    const typingEl = appendTyping();
+
+    try {
+      const res = await fetch('/chatbot/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+        body: JSON.stringify({ message: text, history: history.slice(-10) }),
+      });
+      const data = await res.json();
+      typingEl.remove();
+      const reply = data.response || 'Sorry, something went wrong.';
+      appendMsg(reply, 'bot');
+      history.push({ role: 'assistant', content: reply });
+    } catch {
+      typingEl.remove();
+      appendMsg('Network error. Please check your connection.', 'bot');
+    }
+
+    waiting = false;
+  }
+
+  sendBtn.addEventListener('click', send);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+  });
+
+  // Auto-resize textarea
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 80) + 'px';
+  });
+
+  function getCookie(name) {
+    const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    return v ? v[2] : '';
+  }
+})();
+// Terminal typing logo
+(function() {
+  const el = document.getElementById('nav-logo');
+  const text = 'Saim_Ahmad';
+  const SPEED = 150; // one number controls everything — increase to slow down
+  let i = 0;
+  let deleting = false;
+  let pausing = false;
+
+  function type() {
+    if (pausing) return;
+
+    if (!deleting) {
+      i++;
+      render();
+      if (i === text.length) {
+        pausing = true;
+        setTimeout(() => { pausing = false; deleting = true; type(); }, 1800);
+        return;
+      }
+    } else {
+      i--;
+      render();
+      if (i === 0) {
+        pausing = true;
+        setTimeout(() => { pausing = false; deleting = false; type(); }, 800);
+        return;
+      }
+    }
+
+    setTimeout(type, SPEED);
+  }
+
+  function render() {
+    el.innerHTML =
+      '<span style="color:var(--accent)">{</span>' +
+      '<span style="color:var(--text)">' + text.slice(0, i) + '</span>' +
+      (i === text.length ? '<span style="color:var(--accent)">};</span>' : '') +
+      '<span class="cursor">█</span>';
+  }
+
+  render();
+  setTimeout(type, SPEED);
+})();
+
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

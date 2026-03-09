@@ -1,0 +1,163 @@
+{% extends 'portfolio/base.html' %}
+{% block title %}Resume — Saim Ahmad{% endblock %}
+
+{% block extra_css %}
+.resume-page { padding: 80px 0; }
+.resume-header { text-align: center; margin-bottom: 64px; }
+.resume-header h1 { font-size: 48px; font-weight: 800; margin-bottom: 8px; }
+.resume-header p { color: var(--muted); font-size: 15px; }
+
+.resume-download {
+  display: flex; gap: 12px; justify-content: center; margin-top: 24px;
+}
+
+.resume-section { margin-bottom: 56px; }
+.resume-section h2 {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.resume-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.resume-row-left h3 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+.resume-row-left .org { font-size: 14px; color: var(--accent); font-family: var(--mono); }
+.resume-row-left .desc { font-size: 14px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
+.resume-row-right { font-size: 12px; color: var(--muted); font-family: var(--mono); white-space: nowrap; }
+
+.skills-resume { display: flex; flex-wrap: wrap; gap: 8px; }
+{% endblock %}
+
+{% block content %}
+<section class="resume-page">
+  <div class="container" style="max-width:800px;">
+
+    <div class="resume-header fade-up">
+      <h1>Saim <span style="background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Ahmad</span></h1>
+      <p>Backend Software Engineer · Paderborn, Germany</p>
+      <p style="margin-top:4px;">
+        <a href="mailto:ah.saim786@gmail.com" style="color:var(--accent);text-decoration:none;">ah.saim786@gmail.com</a> ·
+        <a href="https://github.com/SaimiAh" target="_blank" style="color:var(--accent);text-decoration:none;">github.com/SaimiAh</a> ·
+        <a href="https://linkedin.com/in/saimahmad-/" target="_blank" style="color:var(--accent);text-decoration:none;">LinkedIn</a>
+      </p>
+      <div class="resume-download">
+        <a href="/" class="btn btn-outline">← Back to Portfolio</a>
+      </div>
+    </div>
+
+    <!-- Profile -->
+    <div class="card resume-section fade-up">
+      <h2>Profile</h2>
+      <p style="color:var(--muted);font-size:15px;line-height:1.7;">
+        Software developer with 3 years of expertise in Python and dynamic modules. Currently pursuing a Master's degree
+        in Computer Science at Universität Paderborn, Germany. Skilled in Django for database design, authentication,
+        and deployment. Expertise in API integration, Docker, managing asynchronous tasks, and queueing. Develops
+        innovative web apps using the React frontend toolkit. Known for teamwork and collaborative approach.
+      </p>
+    </div>
+
+    <!-- Experience -->
+    <div class="card resume-section fade-up">
+      <h2>Experience</h2>
+
+      <div class="resume-row">
+        <div class="resume-row-left">
+          <h3>Backend Software Engineer</h3>
+          <div class="org">DiveBridge · Lahore, Pakistan</div>
+          <p class="desc">Engineered StudyScavenger (clinical research portal), DogWalker (route optimisation), Ecommerce Store, and LawAI (legal-tech automation). Stack: Django REST, React, Docker, AWS ECS.</p>
+        </div>
+        <div class="resume-row-right">Feb 2025 – Aug 2025</div>
+      </div>
+
+      <div class="resume-row">
+        <div class="resume-row-left">
+          <h3>Associate Software Engineer</h3>
+          <div class="org">TechXelo · Lahore, Pakistan</div>
+          <p class="desc">Built real-time Meeting &amp; Chat app with location tracking (MapMyIndia, Google Maps), NearYou dating app (WebSockets, Redis), Email Verification platform, and automation scripts (Selenium, Playwright).</p>
+        </div>
+        <div class="resume-row-right">Oct 2023 – Dec 2024</div>
+      </div>
+
+      <div class="resume-row">
+        <div class="resume-row-left">
+          <h3>Python/Django Developer Intern</h3>
+          <div class="org">Enigmatix · Bahawalpur, Pakistan</div>
+          <p class="desc">Multi-brand marketplace, Blood &amp; Organ Donation portal, Python threading for I/O parallelisation.</p>
+        </div>
+        <div class="resume-row-right">Oct 2022 – May 2023</div>
+      </div>
+
+      <div class="resume-row" style="margin-bottom:0">
+        <div class="resume-row-left">
+          <h3>Python Developer Intern</h3>
+          <div class="org">Codiux · Multan, Pakistan</div>
+          <p class="desc">Auto Scrape pipeline with BeautifulSoup; Smart CV generator using PDFKit and Pillow.</p>
+        </div>
+        <div class="resume-row-right">May 2022 – Jan 2023</div>
+      </div>
+    </div>
+
+    <!-- Education -->
+    <div class="card resume-section fade-up">
+      <h2>Education</h2>
+
+      <div class="resume-row">
+        <div class="resume-row-left">
+          <h3>MSc Computer Science</h3>
+          <div class="org">Universität Paderborn · Germany</div>
+        </div>
+        <div class="resume-row-right">2024 – Expected July 2027</div>
+      </div>
+
+      <div class="resume-row" style="margin-bottom:0">
+        <div class="resume-row-left">
+          <h3>BSc Computer Science</h3>
+          <div class="org">Islamia University of Bahawalpur</div>
+          <p class="desc">GPA: 3.55</p>
+        </div>
+        <div class="resume-row-right">Graduated June 2023</div>
+      </div>
+    </div>
+
+    <!-- Skills -->
+    <div class="card resume-section fade-up">
+      <h2>Skills</h2>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div>
+          <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px;">LANGUAGES</p>
+          <div class="skills-resume"><span class="tag">Python</span><span class="tag">JavaScript</span><span class="tag">SQL</span></div>
+        </div>
+        <div>
+          <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px;">FRAMEWORKS</p>
+          <div class="skills-resume"><span class="tag">Django</span><span class="tag">Django REST</span><span class="tag">React</span><span class="tag">Celery</span><span class="tag">WebSockets</span></div>
+        </div>
+        <div>
+          <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px;">DATABASES &amp; CACHE</p>
+          <div class="skills-resume"><span class="tag">PostgreSQL</span><span class="tag">MySQL</span><span class="tag">SQLite</span><span class="tag">Redis</span></div>
+        </div>
+        <div>
+          <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px;">DEVOPS</p>
+          <div class="skills-resume"><span class="tag">Docker</span><span class="tag">AWS (EC2, S3, Lambda, ECS)</span><span class="tag">GitHub Actions</span><span class="tag">Vagrant</span></div>
+        </div>
+        <div>
+          <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px;">AUTOMATION</p>
+          <div class="skills-resume"><span class="tag">Selenium</span><span class="tag">Playwright</span><span class="tag">BeautifulSoup</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

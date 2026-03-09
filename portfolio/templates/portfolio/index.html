@@ -1,0 +1,930 @@
+{% extends 'portfolio/base.html' %}
+{% load static %}
+{% block title %}Saim Ahmad — Backend Software Engineer{% endblock %}
+
+{% block extra_css %}
+/* ── HERO ──────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 32px;
+  position: relative;
+}
+
+.hero-badge {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  background: rgba(0,229,255,0.08);
+  border: 1px solid rgba(0,229,255,0.2);
+  padding: 6px 18px;
+  border-radius: 100px;
+  margin-bottom: 28px;
+  display: inline-block;
+}
+
+.hero-title {
+  font-size: clamp(42px, 8vw, 88px);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+}
+
+.hero-title .line2 {
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: clamp(16px, 2.5vw, 20px);
+  color: var(--muted);
+  max-width: 700px;
+  margin: 0 auto 36px;
+  line-height: 1.6;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.hero-scroll {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  font-family: var(--mono);
+  letter-spacing: 0.1em;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%       { transform: translateX(-50%) translateY(6px); }
+}
+
+.hero-scroll svg { width: 18px; height: 18px; fill: var(--muted); }
+
+/* ── ABOUT ─────────────────────────────────── */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.about-text p { color: var(--muted); margin-bottom: 16px; }
+
+.about-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+}
+
+.stat-card .num {
+  font-size: 32px;
+  font-weight: 800;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-family: var(--mono);
+}
+
+.stat-card p { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+.about-img-wrap {
+  position: relative;
+}
+
+.about-img {
+  width: 320px;
+  height: 320px;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  border: 2px solid var(--accent);
+  box-shadow:
+    0 0 32px rgba(0, 229, 255, 0.4),
+    0 0 64px rgba(168, 85, 247, 0.2);
+  transition: box-shadow .3s, transform .3s;
+}
+
+.about-img:hover {
+  transform: scale(1.03);
+  box-shadow:
+    0 0 48px rgba(0, 229, 255, 0.6),
+    0 0 80px rgba(168, 85, 247, 0.35);
+}
+
+.about-deco {
+  position: absolute;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,229,255,0.15), transparent);
+  top: -20px; right: -20px;
+}
+
+@media (max-width: 768px) {
+  .about-grid { grid-template-columns: 1fr; gap: 40px; }
+  .about-img-wrap { order: -1; }
+}
+
+/* ── SKILLS ────────────────────────────────── */
+#skills { background: var(--bg2); }
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.skill-group h3 {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.skill-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ── PROJECTS ──────────────────────────────── */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.project-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all .3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+.project-card:hover { border-color: rgba(0,229,255,0.25); transform: translateY(-4px); box-shadow: 0 20px 48px rgba(0,0,0,0.5); }
+.project-card:hover::before { opacity: 1; }
+
+.project-icon {
+  font-size: 28px;
+  margin-bottom: 4px;
+}
+
+.project-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.project-card p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  flex: 1;
+}
+
+.project-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+/* ── EXPERIENCE ────────────────────────────── */
+#experience { background: var(--bg2); }
+
+.timeline {
+  position: relative;
+  padding-left: 32px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--accent), var(--accent2), transparent);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 48px;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -37px;
+  top: 6px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(0,229,255,0.6);
+}
+
+.timeline-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.timeline-role {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.timeline-company {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+}
+
+.timeline-date {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--mono);
+  margin-left: auto;
+}
+
+.timeline-desc {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.timeline-projects { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+
+.timeline-project {
+  font-size: 13.5px;
+  color: var(--text);
+  padding-left: 16px;
+  border-left: 2px solid rgba(0,229,255,0.3);
+}
+
+/* ── EDUCATION ─────────────────────────────── */
+.edu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 640px) { .edu-grid { grid-template-columns: 1fr; } }
+
+.edu-card { display: flex; gap: 20px; align-items: flex-start; }
+
+.edu-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(0,229,255,0.15), rgba(168,85,247,0.15));
+  border: 1px solid rgba(0,229,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.edu-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.edu-card .school { font-size: 13.5px; color: var(--accent); margin-bottom: 4px; font-family: var(--mono); }
+.edu-card .period { font-size: 12px; color: var(--muted); }
+
+/* ── BLOG ──────────────────────────────────── */
+#blog { background: var(--bg2); }
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.blog-card { display: flex; flex-direction: column; gap: 10px; }
+.blog-card h3 { font-size: 17px; font-weight: 600; }
+.blog-card p { font-size: 14px; color: var(--muted); flex: 1; }
+.blog-card .meta { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+.blog-card a { text-decoration: none; color: inherit; }
+.blog-card .read-more {
+  font-size: 13px;
+  color: var(--accent);
+  text-decoration: none;
+  font-family: var(--mono);
+  letter-spacing: 0.04em;
+}
+.blog-card .read-more:hover { text-decoration: underline; }
+
+.blog-empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 48px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+
+/* ── CONTACT ───────────────────────────────── */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+}
+
+@media (max-width: 768px) { .contact-grid { grid-template-columns: 1fr; } }
+
+.contact-info h3 { font-size: 22px; font-weight: 700; margin-bottom: 16px; }
+.contact-info p { color: var(--muted); font-size: 15px; margin-bottom: 32px; }
+
+.contact-links { display: flex; flex-direction: column; gap: 12px; }
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color .2s;
+}
+
+.contact-link:hover { color: var(--accent); }
+
+.contact-link-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+/* Form */
+.form-group { margin-bottom: 16px; }
+
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-family: var(--mono);
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.form-control {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 16px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  outline: none;
+  transition: border-color .2s;
+}
+
+.form-control:focus { border-color: rgba(0,229,255,0.4); }
+textarea.form-control { resize: vertical; min-height: 120px; }
+
+.success-msg {
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.3);
+  color: #22c55e;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+{% endblock %}
+
+{% block content %}
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-badge">// Available for opportunities</div>
+
+  <h1 class="hero-title">
+    <span class="line1">Hi, I'm Saim Ahmad</span><br/>
+    <span class="line2">Software Engineer — Full Stack & AI</span>
+  </h1>
+
+  <p class="hero-sub">
+    I don't just write code — I build things that work end to end, from the first line of frontend to the last deployment pipeline. Three years in, I have shipped products across every layer of the stack and I am comfortable owning all of it.
+Where I spend most of my thinking: AI. Generative AI, Agentic AI, large language models in production — this is the space I am genuinely obsessed with and where I believe the most interesting engineering problems live right now.
+  </p>
+
+  <div class="hero-ctas">
+    <a href="#projects" class="btn btn-primary">View Projects</a>
+    <a href="#contact"  class="btn btn-outline">Get In Touch</a>
+    <a href="/resume/"  class="btn btn-outline">Resume</a>
+  </div>
+
+  <div class="hero-scroll">
+    <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h12z"/></svg>
+    SCROLL
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     QUOTE
+══════════════════════════════════════════ -->
+<section style="padding:64px 0;">
+  <div class="container">
+    <blockquote style="
+      text-align:center;
+      font-size:clamp(16px,2.5vw,22px);
+      font-style:italic;
+      color:var(--muted);
+      max-width:760px;
+      margin:0 auto;
+      line-height:1.8;
+      padding:40px;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      background:var(--card);
+      position:relative;
+    ">
+      <span style="
+        position:absolute;
+        top:-24px;
+        left:50%;
+        transform:translateX(-50%);
+        font-size:72px;
+        color:var(--accent);
+        font-family:var(--mono);
+        line-height:1;
+        opacity:0.4;
+      ">"</span>
+      <span style="color:var(--text);">The developers who will shape the next decade are not the ones who fear AI</span>
+      <span style="color:var(--accent);"> — they are the ones who learn to think alongside it.</span>
+    </blockquote>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     ABOUT
+══════════════════════════════════════════ -->
+<section id="about">
+  <div class="container">
+    <p class="section-label fade-up">01 — About</p>
+    <div class="about-grid">
+
+      <div class="about-text fade-up">
+        <h2 class="section-title">Building things <em>that scale</em></h2>
+        <p>
+          I'm a backend software engineer with 3 years of hands-on experience crafting
+          production-grade Python/Django applications. From clinical research portals to
+          real-time chat systems, I love solving complex problems with clean, maintainable code.
+        </p>
+        <p>
+          Currently based in Paderborn, Germany, where I'm pursuing my Master's in Computer
+          Science at Universität Paderborn alongside freelance and open-source work.
+        </p>
+        <p>
+          Outside of code I enjoy exploring new tech stacks, contributing to open source,
+          and sharing what I learn through writing.
+        </p>
+
+        <div class="about-stats">
+          <div class="stat-card fade-up">
+            <div class="num">3+</div>
+            <p>Years Experience</p>
+          </div>
+          <div class="stat-card fade-up">
+            <div class="num">20+</div>
+            <p>Projects Shipped</p>
+          </div>
+          <div class="stat-card fade-up">
+            <div class="num">4</div>
+            <p>Companies Worked With</p>
+          </div>
+          <div class="stat-card fade-up">
+            <div class="num">MSc</div>
+            <p>CS @ Uni Paderborn</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="about-img-wrap fade-up">
+        <div class="about-deco"></div>
+        <img src="{% static 'portfolio/img/saim.jpg' %}"
+             alt="Saim Ahmad"
+             class="about-img" />
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     SKILLS
+══════════════════════════════════════════ -->
+<section id="skills">
+  <div class="container">
+    <p class="section-label fade-up">02 — Skills</p>
+    <h2 class="section-title fade-up">Tech <em>Stack</em></h2>
+
+    <div class="skills-grid">
+
+      <div class="card skill-group fade-up">
+        <h3>Languages</h3>
+        <div class="skill-tags">
+          <span class="tag">Python</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">SQL</span>
+          <span class="tag">HTML5 / CSS3</span>
+        </div>
+      </div>
+
+      <div class="card skill-group fade-up">
+        <h3>Frameworks</h3>
+        <div class="skill-tags">
+          <span class="tag">Django</span>
+          <span class="tag">Django REST</span>
+          <span class="tag">React</span>
+          <span class="tag">Celery</span>
+          <span class="tag">WebSockets</span>
+        </div>
+      </div>
+
+      <div class="card skill-group fade-up">
+        <h3>Databases</h3>
+        <div class="skill-tags">
+          <span class="tag">PostgreSQL</span>
+          <span class="tag">MySQL</span>
+          <span class="tag">SQLite</span>
+          <span class="tag">Redis</span>
+        </div>
+      </div>
+
+      <div class="card skill-group fade-up">
+        <h3>DevOps &amp; Cloud</h3>
+        <div class="skill-tags">
+          <span class="tag">Docker</span>
+          <span class="tag">AWS EC2 / S3 / Lambda</span>
+          <span class="tag">GitHub Actions</span>
+          <span class="tag">Vagrant</span>
+        </div>
+      </div>
+
+      <div class="card skill-group fade-up">
+        <h3>Frontend</h3>
+        <div class="skill-tags">
+          <span class="tag">Bootstrap</span>
+          <span class="tag">Tailwind</span>
+          <span class="tag">React / Axios</span>
+          <span class="tag">Three.js</span>
+        </div>
+      </div>
+
+      <div class="card skill-group fade-up">
+        <h3>Automation &amp; Testing</h3>
+        <div class="skill-tags">
+          <span class="tag">Selenium</span>
+          <span class="tag">Playwright</span>
+          <span class="tag">BeautifulSoup</span>
+          <span class="tag">Channels / Daphne</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     PROJECTS
+══════════════════════════════════════════ -->
+<section id="projects">
+  <div class="container">
+    <p class="section-label fade-up">03 — Projects</p>
+    <h2 class="section-title fade-up">What I've <em>Built</em></h2>
+
+    <div class="projects-grid">
+
+      <div class="project-card fade-up">
+        <div class="project-icon">🔬</div>
+        <h3>StudyScavenger</h3>
+        <p>Secure clinical research portal enabling researchers to manage studies and patients to enroll in trials. Built with Django REST + React, deployed on AWS ECS with Docker.</p>
+        <div class="project-footer">
+          <span class="tag">Django REST</span><span class="tag">React</span><span class="tag">AWS ECS</span><span class="tag">Docker</span>
+        </div>
+      </div>
+
+      <div class="project-card fade-up">
+        <div class="project-icon">⚖️</div>
+        <h3>LawAI</h3>
+        <p>Legal-tech platform with automation scripts ingesting hearings, judgments, and statutes from external legal sites. Features lawyer booking and secure token-based auth.</p>
+        <div class="project-footer">
+          <span class="tag">Django</span><span class="tag">Automation</span><span class="tag">Bootstrap</span><span class="tag">SQL</span>
+        </div>
+      </div>
+
+      <div class="project-card fade-up">
+        <div class="project-icon">💬</div>
+        <h3>NearYou</h3>
+        <p>Real-time chat &amp; dating web app connecting users with service-provider "buddies" by proximity and interests. Uses WebSockets, Redis Channels, and PostgreSQL.</p>
+        <div class="project-footer">
+          <span class="tag">WebSockets</span><span class="tag">Redis</span><span class="tag">React</span><span class="tag">PostgreSQL</span>
+        </div>
+      </div>
+
+      <div class="project-card fade-up">
+        <div class="project-icon">📍</div>
+        <h3>Meeting &amp; Chat App</h3>
+        <p>Location-aware communication platform with live geofenced markers via MapMyIndia &amp; Google Maps. JWT auth, real-time messaging, and one-on-one / group conversations.</p>
+        <div class="project-footer">
+          <span class="tag">Django</span><span class="tag">MapMyIndia</span><span class="tag">WebSockets</span><span class="tag">MySQL</span>
+        </div>
+      </div>
+
+      <div class="project-card fade-up">
+        <div class="project-icon">🐕</div>
+        <h3>DogWalker</h3>
+        <p>Staff scheduling app that ingests appointment CSVs, applies a 3-pass algorithm for assignments, then optimises routes via Google Maps. Custom admin for one-click CSV export.</p>
+        <div class="project-footer">
+          <span class="tag">Django</span><span class="tag">Google Maps API</span><span class="tag">Docker</span><span class="tag">REST</span>
+        </div>
+      </div>
+
+      <div class="project-card fade-up">
+        <div class="project-icon">🛒</div>
+        <h3>E-Commerce Store</h3>
+        <p>Full-stack containerised e-commerce platform with token-based auth, product catalogue, cart, checkout and payments. PostgreSQL + Docker for consistent CI/CD.</p>
+        <div class="project-footer">
+          <span class="tag">Django REST</span><span class="tag">React</span><span class="tag">PostgreSQL</span><span class="tag">Docker</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     EXPERIENCE
+══════════════════════════════════════════ -->
+<section id="experience">
+  <div class="container">
+    <p class="section-label fade-up">04 — Experience</p>
+    <h2 class="section-title fade-up">Work <em>History</em></h2>
+
+    <div class="timeline">
+
+      <div class="timeline-item fade-up">
+        <div class="timeline-meta">
+          <span class="timeline-role">Backend Software Engineer</span>
+          <span class="timeline-company">@ DiveBridge</span>
+          <span class="timeline-date">Feb 2025 — Aug 2025 · Lahore, PK</span>
+        </div>
+        <p class="timeline-desc">
+          Engineered full-stack Django/React applications with Docker containerisation and AWS ECS deployments for high-availability production environments.
+        </p>
+        <div class="timeline-projects">
+          <div class="timeline-project">StudyScavenger — Clinical research portal with token-protected REST APIs</div>
+          <div class="timeline-project">DogWalker — Staff scheduling &amp; Google Maps route optimisation</div>
+          <div class="timeline-project">Ecommerce Store — Full e-commerce with payments &amp; CI/CD</div>
+          <div class="timeline-project">LawAI — Legal-tech platform with court data automation scripts</div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="tag">Python</span><span class="tag">Django REST</span><span class="tag">React</span><span class="tag">Docker</span><span class="tag">AWS</span>
+        </div>
+      </div>
+
+      <div class="timeline-item fade-up">
+        <div class="timeline-meta">
+          <span class="timeline-role">Associate Software Engineer</span>
+          <span class="timeline-company">@ TechXelo</span>
+          <span class="timeline-date">Oct 2023 — Dec 2024 · Lahore, PK</span>
+        </div>
+        <p class="timeline-desc">
+          Built real-time communication features with WebSocket/Redis architecture and integrated location-tracking APIs for a location-aware meeting platform.
+        </p>
+        <div class="timeline-projects">
+          <div class="timeline-project">Meeting &amp; Chat App — Real-time messaging with live location tracking</div>
+          <div class="timeline-project">NearYou — Chat &amp; dating app with proximity matching</div>
+          <div class="timeline-project">Email Verification Platform — Third-party API integration with credit system</div>
+          <div class="timeline-project">Automation Scripts — Selenium/Playwright for trading, NBA data, telephony</div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="tag">Selenium</span><span class="tag">Playwright</span><span class="tag">WebSockets</span><span class="tag">Redis</span><span class="tag">AWS</span>
+        </div>
+      </div>
+
+      <div class="timeline-item fade-up">
+        <div class="timeline-meta">
+          <span class="timeline-role">Python/Django Developer Intern</span>
+          <span class="timeline-company">@ Enigmatix</span>
+          <span class="timeline-date">Oct 2022 — May 2023 · Bahawalpur, PK</span>
+        </div>
+        <p class="timeline-desc">
+          Developed multi-tenant marketplace and donation web apps; integrated Python threading for parallelising I/O-bound operations significantly improving throughput.
+        </p>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="tag">Django</span><span class="tag">SQLite</span><span class="tag">Bootstrap</span><span class="tag">Docker</span>
+        </div>
+      </div>
+
+      <div class="timeline-item fade-up">
+        <div class="timeline-meta">
+          <span class="timeline-role">Python Developer Intern</span>
+          <span class="timeline-company">@ Codiux</span>
+          <span class="timeline-date">May 2022 — Jan 2023 · Multan, PK</span>
+        </div>
+        <p class="timeline-desc">
+          Built web scraping pipelines with BeautifulSoup and a form-driven PDF CV generator using PDFKit and Pillow.
+        </p>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="tag">Python</span><span class="tag">BeautifulSoup</span><span class="tag">PDFKit</span><span class="tag">Pillow</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     EDUCATION
+══════════════════════════════════════════ -->
+<section id="education">
+  <div class="container">
+    <p class="section-label fade-up">05 — Education</p>
+    <h2 class="section-title fade-up">Academic <em>Background</em></h2>
+
+    <div class="edu-grid">
+      <div class="card edu-card fade-up">
+        <div class="edu-icon">🎓</div>
+        <div>
+          <h3>MSc Computer Science</h3>
+          <p class="school">Universität Paderborn, Germany</p>
+          <p class="period">2024 — Expected July 2027</p>
+        </div>
+      </div>
+
+      <div class="card edu-card fade-up">
+        <div class="edu-icon">🏫</div>
+        <div>
+          <h3>BSc Computer Science</h3>
+          <p class="school">Islamia University of Bahawalpur</p>
+          <p class="period">Graduated June 2023 · GPA 3.55</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     BLOG
+══════════════════════════════════════════ -->
+<section id="blog">
+  <div class="container">
+    <p class="section-label fade-up">06 — Blog</p>
+    <h2 class="section-title fade-up">Latest <em>Posts</em></h2>
+
+    {% if blog_posts %}
+    <div class="blog-grid">
+      {% for post in blog_posts %}
+      <div class="card blog-card fade-up">
+        <p class="meta">{{ post.created_at|date:"d M Y" }}</p>
+        <h3><a href="{% url 'blog_detail' post.slug %}">{{ post.title }}</a></h3>
+        <p>{{ post.excerpt }}</p>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin:4px 0;">
+          {% for tag in post.tag_list %}<span class="tag">{{ tag }}</span>{% endfor %}
+        </div>
+        <a href="{% url 'blog_detail' post.slug %}" class="read-more">Read more →</a>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="text-align:center;margin-top:40px;">
+      <a href="{% url 'blog_list' %}" class="btn btn-outline">All Posts →</a>
+    </div>
+    {% else %}
+    <div class="blog-empty fade-up">
+      <p style="font-size:32px;margin-bottom:12px;">✍️</p>
+      <p>Blog posts coming soon! Manage them via the <a href="/admin/" style="color:var(--accent);">Django admin</a>.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     CONTACT
+══════════════════════════════════════════ -->
+<section id="contact">
+  <div class="container">
+    <p class="section-label fade-up">07 — Contact</p>
+    <h2 class="section-title fade-up">Let's <em>Talk</em></h2>
+
+    <div class="contact-grid">
+      <div class="contact-info fade-up">
+        <h3>Open to opportunities</h3>
+        <p>
+          Whether you have a project in mind, a job opportunity, or just want to say hi —
+          my inbox is always open. Based in Paderborn, Germany (CET/CEST).
+        </p>
+
+        <div class="contact-links">
+          <a href="mailto:ah.saim786@gmail.com" class="contact-link">
+            <div class="contact-link-icon">✉️</div>
+            ah.saim786@gmail.com
+          </a>
+          <a href="https://linkedin.com/in/saimahmad-/" target="_blank" class="contact-link">
+            <div class="contact-link-icon">💼</div>
+            linkedin.com/in/saimahmad-/
+          </a>
+          <a href="https://github.com/SaimiAh" target="_blank" class="contact-link">
+            <div class="contact-link-icon">🐙</div>
+            github.com/SaimiAh
+          </a>
+          <a href="tel:+4917514641640" class="contact-link">
+            <div class="contact-link-icon">📱</div>
+            (+49) 175 1464164
+          </a>
+        </div>
+      </div>
+
+      <div class="fade-up">
+        {% if contact_success %}
+        <div class="success-msg">✅ Message sent! I'll get back to you soon.</div>
+        {% endif %}
+
+        <form method="POST" action="#contact">
+          {% csrf_token %}
+          <div class="form-group">
+            <label>NAME</label>
+            <input type="text" name="name" class="form-control" placeholder="Your name" required />
+          </div>
+          <div class="form-group">
+            <label>EMAIL</label>
+            <input type="email" name="email" class="form-control" placeholder="your@email.com" required />
+          </div>
+          <div class="form-group">
+            <label>SUBJECT</label>
+            <input type="text" name="subject" class="form-control" placeholder="What's this about?" />
+          </div>
+          <div class="form-group">
+            <label>MESSAGE</label>
+            <textarea name="message" class="form-control" placeholder="Tell me about your project…" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">
+            Send Message →
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
