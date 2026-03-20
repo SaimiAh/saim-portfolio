@@ -287,6 +287,38 @@
   color: var(--accent);
 }
 
+.company-website {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.company-website-label {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.company-url {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0,229,255,0.3);
+  padding-bottom: 2px;
+  transition: all .3s;
+}
+
+.company-url:hover {
+  border-bottom-color: var(--accent);
+  text-shadow: 0 0 12px rgba(0,229,255,0.6);
+  letter-spacing: 0.05em;
+}
+
 .timeline-date {
   font-size: 12px;
   color: var(--muted);
@@ -763,6 +795,10 @@ Where I spend most of my thinking: AI. Generative AI, Agentic AI, large language
           <span class="timeline-company">@ DiveBridge</span>
           <span class="timeline-date">Feb 2025 — Aug 2025 · Lahore, PK</span>
         </div>
+        <div class="company-website">
+          <span class="company-website-label">Company Website</span>
+          <a href="https://divebridge.com/" target="_blank" class="company-url">↗ divebridge.com</a>
+        </div
         <p class="timeline-desc">
           Engineered full-stack Django/React applications with Docker containerisation and AWS ECS deployments for high-availability production environments.
         </p>
