@@ -528,9 +528,11 @@
 
 <div class="chat-window" id="chat-window" role="dialog" aria-label="Chat with Saim's AI assistant">
   <div class="chat-header">
-    <div class="chat-avatar">SA</div>
+    <div class="chat-avatar">
+      <img src="{% static 'portfolio/img/chatbot.jpg' %}" alt="AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />
+    </div>
     <div class="chat-header-info">
-      <h4>Saim's AI</h4>
+      <h4>Saim's AI Assitant</h4>
       <p>● Online</p>
     </div>
     <button class="chat-close" id="chat-close" aria-label="Close chat">✕</button>
@@ -538,7 +540,7 @@
 
   <div class="chat-messages" id="chat-messages">
     <div class="msg bot">
-      👋 Hi! I'm Saim's AI assistant. Ask me anything about his skills, projects, or experience!
+      👋 Hi! I'm Saim's AI assistant. Ask me anything about his skills, projects, or experience — or just say hello!
     </div>
   </div>
 
@@ -843,7 +845,87 @@ document.querySelectorAll('.mobile-link').forEach(a => {
   render();
   setTimeout(type, SPEED);
 })();
+// ─────────────────────────────────────────────
+// CHAT WELCOME NOTIFICATION
+// ─────────────────────────────────────────────
+setTimeout(() => {
+  const toggle = document.getElementById('chat-toggle');
+  const win = document.getElementById('chat-window');
 
+  // Don't show if chat is already open
+  if (win.classList.contains('open')) return;
+
+  const notification = document.createElement('div');
+  notification.id = 'chat-notification';
+  notification.style.cssText = `
+    position: fixed;
+    bottom: 100px;
+    right: 32px;
+    z-index: 199;
+    background: var(--bg2);
+    border: 1px solid rgba(0,229,255,0.25);
+    border-radius: 12px;
+    padding: 12px 16px;
+    width: 230px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    animation: msgIn .3s ease;
+    cursor: pointer;
+  `;
+  notification.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;"></div>
+        <span style="font-size:12px;font-weight:600;color:var(--accent);">Saim's AI Assistant</span>
+      </div>
+      <span id="chat-notif-close" style="
+        font-size:16px;
+        color:var(--muted);
+        cursor:pointer;
+        line-height:1;
+        padding:2px 6px;
+        border-radius:4px;
+        transition:all 0.2s;
+        display:inline-block;
+      ">&times;</span>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin:0;line-height:1.5;">👋 Hi! Ask me anything about Saim's skills, projects or experience!</p>
+    <p style="font-size:10px;color:var(--muted);margin-top:6px;opacity:0.6;">Click to chat</p>
+  `;
+
+  notification.addEventListener('click', () => {
+    notification.remove();
+    win.classList.add('open');
+    document.getElementById('chat-input').focus();
+  });
+
+  document.body.appendChild(notification);
+
+  const closeBtn = document.getElementById('chat-notif-close');
+  closeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    notification.remove();
+  });
+
+  closeBtn.addEventListener('mouseenter', () => {
+    closeBtn.style.transform = 'scale(1.4)';
+    closeBtn.style.color = 'var(--text)';
+  });
+
+  closeBtn.addEventListener('mouseleave', () => {
+    closeBtn.style.transform = 'scale(1)';
+    closeBtn.style.color = 'var(--muted)';
+  });
+
+  // Auto hide after 7 seconds
+  setTimeout(() => {
+    if (document.getElementById('chat-notification')) {
+      notification.style.opacity = '0';
+      notification.style.transition = 'opacity 0.5s';
+      setTimeout(() => notification.remove(), 500);
+    }
+  }, 7000);
+
+}, 3000); // Shows after 3 seconds
 </script>
 
 {% block extra_js %}{% endblock %}
