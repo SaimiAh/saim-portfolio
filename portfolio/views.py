@@ -1,10 +1,12 @@
 import json
-from django.shortcuts import render, get_object_or_404, redirect
+import logging
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from django.conf import settings
 from .models import BlogPost, ContactMessage
+
+logger = logging.getLogger(__name__)
 
 # ──────────────────────────────────────────────
 # AI Chatbot System Prompt — Represents Saim
@@ -20,8 +22,9 @@ Email: ah.saim786@gmail.com
 LinkedIn: https://www.linkedin.com/in/saimahmad-/
 GitHub: https://github.com/SaimiAh
 Phone: (+49)175 1464164
+Portfolio: https://saimahmad.dev
 
-Profile: Software developer with 3 years of expertise in Python and Django. Currently pursuing a Master's degree in Computer Science at Universität Paderborn, Germany. Skilled in Django for database design, authentication, and deployment. Expert in API integration, Docker, asynchronous tasks, and React.
+Profile: Full Stack Software Engineer and AI Engineer with 3 years of experience building production-grade web applications. Currently pursuing a Master's degree in Computer Science at Universität Paderborn, Germany. Passionate about Generative AI and Agentic AI systems.
 
 === EDUCATION ===
 - MSc Computer Science — Universität Paderborn, Germany (Expected July 2027)
@@ -34,7 +37,7 @@ Profile: Software developer with 3 years of expertise in Python and Django. Curr
 
 2. TechXelo — Associate Software Engineer (Oct 2023 – Dec 2024, Lahore)
    Tech: Python, Selenium, Playwright, Django REST, React, Docker, AWS, MySQL
-   Projects: Meeting & Chat App with Location Tracking (WebSockets, Redis, MapMyIndia), NearYou (chat & dating app), Email Verification & Enrichment platform, various automation scripts
+   Projects: Meeting & Chat App with Location Tracking, NearYou (chat & dating app), Email Verification platform, automation scripts
 
 3. Enigmatix — Python/Django Developer Intern (Oct 2022 – May 2023, Bahawalpur)
    Projects: Multi-brand marketplace, Blood & Organ Donation Site
@@ -53,17 +56,17 @@ Profile: Software developer with 3 years of expertise in Python and Django. Curr
 === SKILLS ===
 Languages: Python, JavaScript
 Frameworks: Django, Django REST Framework, React
-Databases: MySQL, PostgreSQL, SQLite
+Databases: MySQL, PostgreSQL, SQLite, Redis
 DevOps: Docker, AWS (Lambda, S3, EC2), GitHub Actions CI/CD, Vagrant
-Tools: Selenium, Playwright, BeautifulSoup, WebSockets, Celery, Redis, Git
-Frontend: HTML5, CSS3, Bootstrap, Tailwind, React/Axios
-OS: Linux, macOS, Windows
+AI: Generative AI, Agentic AI, LLM Integration, Prompt Engineering, Claude API, OpenAI API, LangChain, RAG
+Tools: Selenium, Playwright, BeautifulSoup, WebSockets, Celery, Git
+Frontend: HTML5, CSS3, Bootstrap, Tailwind, React/Axios, Three.js
 
 === INSTRUCTIONS ===
 - Answer questions about Saim's skills, experience, projects, and availability warmly and professionally.
 - If asked about hiring or collaboration, encourage them to use the contact form or email ah.saim786@gmail.com
 - Keep answers concise (2-4 sentences max unless a detailed explanation is needed).
-- If asked something you don't know about Saim, say so honestly.
+- If asked something you don't know about Saim, say honestly.
 - Do not make up information.
 """
 
@@ -82,7 +85,12 @@ def index(request):
         subject = request.POST.get('subject', '').strip()
         message = request.POST.get('message', '').strip()
         if name and email and message:
-            ContactMessage.objects.create(name=name, email=email, subject=subject, message=message)
+            ContactMessage.objects.create(
+                name=name,
+                email=email,
+                subject=subject,
+                message=message
+            )
             context['contact_success'] = True
 
     return render(request, 'portfolio/index.html', context)
@@ -106,35 +114,50 @@ def blog_detail(request, slug):
 @require_POST
 def chatbot(request):
     try:
-        import anthropic
+        from groq import Groq
+        from decouple import config
+
         data = json.loads(request.body)
         user_message = data.get('message', '').strip()
         history = data.get('history', [])
 
         if not user_message:
-            return JsonResponse({'success': False, 'response': 'Please send a message.'})
-
-        if not settings.ANTHROPIC_API_KEY:
             return JsonResponse({
                 'success': False,
-                'response': 'AI chatbot is not configured yet. Please add the ANTHROPIC_API_KEY environment variable.'
+                'response': 'Please send a message.'
             })
 
-        client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+        api_key = config('GROQ_API_KEY', default='')
+        if not api_key:
+            return JsonResponse({
+                'success': False,
+                'response': 'Chatbot is currently unavailable. Please email me at ah.saim786@gmail.com'
+            })
 
-        # Build message history (keep last 10 turns to save tokens)
-        messages = history[-20:] + [{"role": "user", "content": user_message}]
+        client = Groq(api_key=api_key)
 
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=500,
-            system=SAIM_SYSTEM_PROMPT,
+        messages = [{"role": "system", "content": SAIM_SYSTEM_PROMPT}]
+        for msg in history[-20:]:
+            messages.append({
+                "role": msg['role'],
+                "content": msg['content']
+            })
+        messages.append({"role": "user", "content": user_message})
+
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
             messages=messages,
+            max_tokens=500
         )
 
-        return JsonResponse({'success': True, 'response': response.content[0].text})
+        return JsonResponse({
+            'success': True,
+            'response': response.choices[0].message.content
+        })
 
-    except ImportError:
-        return JsonResponse({'success': False, 'response': 'Anthropic library not installed. Run: pip install anthropic'})
     except Exception as e:
-        return JsonResponse({'success': False, 'response': f'Sorry, something went wrong. Please try emailing me directly at ah.saim786@gmail.com'})
+        logger.error(f"Chatbot error: {str(e)}")
+        return JsonResponse({
+            'success': False,
+            'response': 'Sorry, I am unavailable right now. Please email me at ah.saim786@gmail.com'
+        })
