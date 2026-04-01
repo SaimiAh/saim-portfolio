@@ -1,4 +1,5 @@
 {% extends 'portfolio/base.html' %}
+{% load static %}
 {% block title %}Resume — Saim Ahmad{% endblock %}
 
 {% block extra_css %}
@@ -8,7 +9,7 @@
 .resume-header p { color: var(--muted); font-size: 15px; }
 
 .resume-download {
-  display: flex; gap: 12px; justify-content: center; margin-top: 24px;
+  display: flex; gap: 12px; justify-content: center; margin-top: 24px; flex-wrap: wrap;
 }
 
 .resume-section { margin-bottom: 56px; }
@@ -38,6 +39,38 @@
 .resume-row-right { font-size: 12px; color: var(--muted); font-family: var(--mono); white-space: nowrap; }
 
 .skills-resume { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.qr-float {
+  position: fixed;
+  bottom: 32px;
+  left: 32px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.qr-float-label {
+  font-size: 9px;
+  font-family: var(--mono);
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.qr-float-box {
+  background: white;
+  padding: 8px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0,229,255,0.2);
+  transition: transform .3s, box-shadow .3s;
+}
+
+.qr-float-box:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 32px rgba(0,229,255,0.4);
+}
 {% endblock %}
 
 {% block content %}
@@ -46,13 +79,16 @@
 
     <div class="resume-header fade-up">
       <h1>Saim <span style="background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Ahmad</span></h1>
-      <p>Backend Software Engineer · Paderborn, Germany</p>
+      <p>Software Engineer — Full Stack & AI · Paderborn, Germany</p>
       <p style="margin-top:4px;">
         <a href="mailto:ah.saim786@gmail.com" style="color:var(--accent);text-decoration:none;">ah.saim786@gmail.com</a> ·
         <a href="https://github.com/SaimiAh" target="_blank" style="color:var(--accent);text-decoration:none;">github.com/SaimiAh</a> ·
         <a href="https://linkedin.com/in/saimahmad-/" target="_blank" style="color:var(--accent);text-decoration:none;">LinkedIn</a>
       </p>
       <div class="resume-download">
+        <a href="{% static 'portfolio/files/SaimAhmadCV.pdf' %}"
+           download="SaimAhmad-CV.pdf"
+           class="btn btn-primary">⬇ Download CV</a>
         <a href="/" class="btn btn-outline">← Back to Portfolio</a>
       </div>
     </div>
@@ -61,10 +97,7 @@
     <div class="card resume-section fade-up">
       <h2>Profile</h2>
       <p style="color:var(--muted);font-size:15px;line-height:1.7;">
-        Software developer with 3 years of expertise in Python and dynamic modules. Currently pursuing a Master's degree
-        in Computer Science at Universität Paderborn, Germany. Skilled in Django for database design, authentication,
-        and deployment. Expertise in API integration, Docker, managing asynchronous tasks, and queueing. Develops
-        innovative web apps using the React frontend toolkit. Known for teamwork and collaborative approach.
+        Full Stack Software Engineer and AI Engineer with 3 years of experience building production-grade web applications end to end. Passionate about Generative AI and Agentic AI systems — I build with AI from the ground up. Currently pursuing a Master's degree in Computer Science at Universität Paderborn, Germany.
       </p>
     </div>
 
@@ -172,4 +205,26 @@
 
   </div>
 </section>
+
+<!-- Floating QR Code -->
+<div class="qr-float">
+  <div class="qr-float-box">
+    <div id="qrcode"></div>
+  </div>
+  <span class="qr-float-label">Scan to Download CV</span>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  new QRCode(document.getElementById("qrcode"), {
+    text: "https://saimahmad.dev/static/portfolio/files/SaimAhmadCV.pdf",
+    width: 100,
+    height: 100,
+    colorDark: "#000000",
+    colorLight: "#ffffff",
+  });
+</script>
 {% endblock %}
