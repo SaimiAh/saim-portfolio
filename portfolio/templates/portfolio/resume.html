@@ -38,6 +38,16 @@
 .resume-row-left .desc { font-size: 14px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
 .resume-row-right { font-size: 12px; color: var(--muted); font-family: var(--mono); white-space: nowrap; }
 
+.resume-list {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+  padding-left: 20px;
+}
+
+.resume-list li { margin-bottom: 4px; }
+
 .skills-resume { display: flex; flex-wrap: wrap; gap: 8px; }
 
 .qr-float {
@@ -79,10 +89,10 @@
 
     <div class="resume-header fade-up">
       <h1>Saim <span style="background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Ahmad</span></h1>
-      <p>Software Engineer — Full Stack & AI · Paderborn, Germany</p>
+      <p>Full Stack Software Engineer & AI Engineer · Munich, Germany</p>
       <p style="margin-top:4px;">
         <a href="mailto:ah.saim786@gmail.com" style="color:var(--accent);text-decoration:none;">ah.saim786@gmail.com</a> ·
-        <a href="https://github.com/SaimiAh" target="_blank" style="color:var(--accent);text-decoration:none;">github.com/SaimiAh</a> ·
+        <a href="https://github.com/SaimiAh" target="_blank" style="color:var(--accent);text-decoration:none;">Github</a> ·
         <a href="https://linkedin.com/in/saimahmad-/" target="_blank" style="color:var(--accent);text-decoration:none;">LinkedIn</a>
       </p>
       <div class="resume-download">
@@ -97,7 +107,7 @@
     <div class="card resume-section fade-up">
       <h2>Profile</h2>
       <p style="color:var(--muted);font-size:15px;line-height:1.7;">
-        Full Stack Software Engineer and AI Engineer with 3 years of experience building production-grade web applications end to end. Passionate about Generative AI and Agentic AI systems — I build with AI from the ground up. Currently pursuing a Master's degree in Computer Science at Universität Paderborn, Germany.
+        Full Stack Software Engineer and AI Engineer with 3 years of hands-on experience designing, building, and deploying production-ready applications across the entire stack. Skilled in Python, Django, FastAPI, Docker, Redis, PostgreSQL, and AWS — comfortable owning every layer from API design to cloud deployment. Deeply passionate about Generative AI and Agentic AI, with real production experience integrating LangChain, RAG pipelines, OpenAI API, and Claude API. Currently advancing expertise through a Master's degree in Computer Science at Universität Paderborn, Germany.
       </p>
     </div>
 
@@ -109,7 +119,16 @@
         <div class="resume-row-left">
           <h3>Full Stack Software Engineer</h3>
           <div class="org">DiveBridge · Lahore, Pakistan</div>
-          <p class="desc">Engineered StudyScavenger (clinical research portal), DogWalker (route optimisation), Ecommerce Store, and LawAI (legal-tech automation). Stack: Django REST, React, Docker, AWS ECS.</p>
+          <p class="desc">Engineered production-grade applications with AI integrations across all four projects:</p>
+          <ul class="resume-list">
+            <li><strong style="color:var(--text);">StudyScavenger</strong> — HIPAA-aligned clinical research portal with AI-powered eligibility engine using OpenAI API and RAG to match patients to trials. Deployed on AWS ECS with Docker.</li>
+            <li><strong style="color:var(--text);">LawAI</strong> — Legal intelligence platform with LangChain and RAG over PostgreSQL vector store enabling natural language queries over thousands of judgments and statutes.</li>
+            <li><strong style="color:var(--text);">DogWalker</strong> — Smart staff scheduling with AI-optimised route generation via FastAPI and Google Maps API.</li>
+            <li><strong style="color:var(--text);">Ecommerce Store</strong> — Full e-commerce platform with CI/CD via GitHub Actions, Docker, and PostgreSQL.</li>
+          </ul>
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="tag">Python</span><span class="tag">Django REST</span><span class="tag">FastAPI</span><span class="tag">React</span><span class="tag">Docker</span><span class="tag">AWS ECS</span><span class="tag">PostgreSQL</span><span class="tag">OpenAI API</span><span class="tag">LangChain</span><span class="tag">RAG</span>
+          </div>
         </div>
         <div class="resume-row-right">Feb 2025 – Aug 2025</div>
       </div>
@@ -118,7 +137,16 @@
         <div class="resume-row-left">
           <h3>Associate Software Engineer</h3>
           <div class="org">TechXelo · Lahore, Pakistan</div>
-          <p class="desc">Built real-time Meeting &amp; Chat app with location tracking (MapMyIndia, Google Maps), NearYou dating app (WebSockets, Redis), Email Verification platform, and automation scripts (Selenium, Playwright).</p>
+          <p class="desc">Built real-time communication and AI-powered platforms:</p>
+          <ul class="resume-list">
+            <li><strong style="color:var(--text);">Meeting & Chat App</strong> — Location-aware platform with JWT auth, Redis Channels, WebSockets, and AI conversation assistant using OpenAI API for smart replies and meeting summaries.</li>
+            <li><strong style="color:var(--text);">NearYou</strong> — Proximity-based social platform with AI-driven compatibility scoring via OpenAI API. Real-time messaging with Redis Channels and WebSockets.</li>
+            <li><strong style="color:var(--text);">Email Intelligence Platform</strong> — Enterprise email validation with AI-based data normalization and integrated payment gateway.</li>
+            <li><strong style="color:var(--text);">Automation Scripts</strong> — Selenium/Playwright bots for OpenPhone, auto-trading, NBA data pipeline, and furniture catalog extraction.</li>
+          </ul>
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="tag">Python</span><span class="tag">Django REST</span><span class="tag">Redis Channels</span><span class="tag">WebSockets</span><span class="tag">Celery</span><span class="tag">PostgreSQL</span><span class="tag">MySQL</span><span class="tag">AWS</span><span class="tag">OpenAI API</span><span class="tag">Selenium</span><span class="tag">Playwright</span>
+          </div>
         </div>
         <div class="resume-row-right">Oct 2023 – Dec 2024</div>
       </div>
@@ -127,7 +155,14 @@
         <div class="resume-row-left">
           <h3>Python/Django Developer Intern</h3>
           <div class="org">Enigmatix · Bahawalpur, Pakistan</div>
-          <p class="desc">Multi-brand marketplace, Blood &amp; Organ Donation portal, Python threading for I/O parallelisation.</p>
+          <ul class="resume-list">
+            <li><strong style="color:var(--text);">Multi-Brand Marketplace</strong> — Independent vendor storefronts with unified cart, payments, and analytics. Dockerized for zero-downtime updates.</li>
+            <li><strong style="color:var(--text);">Blood & Organ Donation Portal</strong> — Real-time donor/recipient search with location sharing and automated email alerts.</li>
+            <li><strong style="color:var(--text);">I/O Optimization</strong> — Integrated Python threading to parallelise I/O-bound operations significantly improving throughput.</li>
+          </ul>
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="tag">Python</span><span class="tag">Django</span><span class="tag">Django REST</span><span class="tag">SQLite</span><span class="tag">Bootstrap</span><span class="tag">Tailwind</span><span class="tag">Docker</span>
+          </div>
         </div>
         <div class="resume-row-right">Oct 2022 – May 2023</div>
       </div>
@@ -136,9 +171,36 @@
         <div class="resume-row-left">
           <h3>Python Developer Intern</h3>
           <div class="org">Codiux · Multan, Pakistan</div>
-          <p class="desc">Auto Scrape pipeline with BeautifulSoup; Smart CV generator using PDFKit and Pillow.</p>
+          <ul class="resume-list">
+            <li><strong style="color:var(--text);">Auto Scrape</strong> — BeautifulSoup pipeline scraping target sites and populating database models in real time.</li>
+            <li><strong style="color:var(--text);">Smart CV Generator</strong> — Form-driven PDF generator using PDFKit and Pillow for HTML/CSS-to-PDF rendering.</li>
+          </ul>
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="tag">Python</span><span class="tag">NumPy</span><span class="tag">BeautifulSoup</span><span class="tag">PDFKit</span><span class="tag">Pillow</span>
+          </div>
         </div>
         <div class="resume-row-right">May 2022 – Jan 2023</div>
+      </div>
+    </div>
+
+    <!-- Academic Projects -->
+    <div class="card resume-section fade-up">
+      <h2>Academic Projects</h2>
+
+      <div class="resume-row" style="margin-bottom:0">
+        <div class="resume-row-left">
+          <h3>EduAI — Adaptive Learning Platform</h3>
+          <div class="org">Universität Paderborn · Germany</div>
+          <p class="desc">GPT-4 powered adaptive learning platform built under Prof. Christian Koldewey:</p>
+          <ul class="resume-list">
+            <li><strong style="color:var(--text);">Conversational AI Interface</strong> — ChatGPT-style interface allowing students to ask questions freely and explore topics through natural dialogue.</li>
+            <li><strong style="color:var(--text);">Adaptive Learning Engine</strong> — Ingests PDF course material, tests student understanding, and generates fully personalized remedial lessons including mathematical formulations, visual flowcharts, and curated course recommendations tailored to each student's knowledge and learning depth.</li>
+          </ul>
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="tag">Python</span><span class="tag">GPT-4</span><span class="tag">LangChain</span><span class="tag">RAG</span><span class="tag">Prompt Engineering</span><span class="tag">Generative AI</span>
+          </div>
+        </div>
+        <div class="resume-row-right">2025 – 2026</div>
       </div>
     </div>
 
@@ -157,7 +219,7 @@
       <div class="resume-row" style="margin-bottom:0">
         <div class="resume-row-left">
           <h3>BSc Computer Science</h3>
-          <div class="org">Islamia University of Bahawalpur</div>
+          <div class="org">Islamia University of Bahawalpur · Pakistan</div>
           <p class="desc">GPA: 3.55 (1.68 in German grading system)</p>
         </div>
         <div class="resume-row-right">Graduated June 2023</div>
@@ -174,7 +236,7 @@
         </div>
         <div>
           <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px;">FRAMEWORKS</p>
-          <div class="skills-resume"><span class="tag">Django</span><span class="tag">Django REST</span><span class="tag">FastAPI</span><span class="tag">React</span><span class="tag">Celery</span><span class="tag">WebSockets</span></div>
+          <div class="skills-resume"><span class="tag">Django</span><span class="tag">Django REST</span><span class="tag">FastAPI</span><span class="tag">React</span><span class="tag">Celery</span><span class="tag">WebSockets</span><span class="tag">Channels</span><span class="tag">Daphne</span></div>
         </div>
         <div>
           <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px;">DATABASES &amp; CACHE</p>
@@ -190,11 +252,11 @@
         </div>
         <div>
           <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px;">AUTOMATION &amp; TESTING</p>
-          <div class="skills-resume"><span class="tag">Selenium</span><span class="tag">Playwright</span><span class="tag">BeautifulSoup</span><span class="tag">Channels / Daphne</span></div>
+          <div class="skills-resume"><span class="tag">Selenium</span><span class="tag">Playwright</span><span class="tag">BeautifulSoup</span></div>
         </div>
         <div>
           <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px;">AI &amp; ML</p>
-          <div class="skills-resume"><span class="tag">Generative AI</span><span class="tag">Agentic AI</span><span class="tag">LLM Integration</span><span class="tag">Prompt Engineering</span><span class="tag">Claude API</span><span class="tag">OpenAI API</span><span class="tag">LangChain</span><span class="tag">RAG</span><span class="tag">Hugging Face</span></div>
+          <div class="skills-resume"><span class="tag">Generative AI</span><span class="tag">Agentic AI</span><span class="tag">LLM Integration</span><span class="tag">Prompt Engineering</span><span class="tag">LangChain</span><span class="tag">RAG</span><span class="tag">OpenAI API</span><span class="tag">Claude API</span><span class="tag">Hugging Face</span></div>
         </div>
         <div>
           <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px;">LIBRARIES</p>
@@ -202,7 +264,22 @@
         </div>
         <div>
           <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px;">PROJECT MANAGEMENT</p>
-          <div class="skills-resume"><span class="tag">Agile / Scrum</span><span class="tag">Trello</span><span class="tag">JIRA</span></div>
+          <div class="skills-resume"><span class="tag">Agile / Scrum</span><span class="tag">JIRA</span><span class="tag">Trello</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Languages -->
+    <div class="card resume-section fade-up">
+      <h2>Languages</h2>
+      <div style="display:flex;gap:32px;flex-wrap:wrap;">
+        <div>
+          <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px;">ENGLISH</p>
+          <span class="tag">C1 — Advanced</span>
+        </div>
+        <div>
+          <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px;">GERMAN</p>
+          <span class="tag">A1 — Beginner</span>
         </div>
       </div>
     </div>

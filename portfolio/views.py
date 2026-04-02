@@ -18,7 +18,7 @@ Keep responses concise, warm, and well structured. Use short paragraphs or bulle
 === IDENTITY ===
 Name: Saim Ahmad
 Title: Software Engineer — Full Stack & AI
-Location: Paderborn, North Rhine-Westphalia, Germany
+Location: Munich, Germany
 Phone: (+49)175 1464164
 Email: ah.saim786@gmail.com
 LinkedIn: linkedin.com/in/saimahmad-/
@@ -33,7 +33,7 @@ Full Stack Software Engineer and AI Engineer with 3+ years of experience buildin
 - German (Deutsch): A1 Beginner
 
 === EDUCATION ===
-- MSc Computer Science — Universität Paderborn, Germany (2024 – Expected July 2027)
+- MSc Computer Science — Universität Paderborn, Germany (2025 – Expected July 2027)
 - BSc Computer Science — Islamia University of Bahawalpur (GPA: 3.55, Graduated June 2023)
 
 === EXPERIENCE ===

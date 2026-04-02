@@ -1,6 +1,6 @@
 # Saim Ahmad
 
-**Software Engineer — Full Stack & AI** · Paderborn, Germany 🇩🇪
+**Software Engineer — Full Stack & AI** · Munich, Germany 🇩🇪
 
 ---
 
