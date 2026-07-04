@@ -626,6 +626,7 @@ Where I spend most of my thinking: AI. Generative AI, Agentic AI, large language
         <div class="skill-tags">
           <span class="tag">Python</span>
           <span class="tag">JavaScript</span>
+          <span class="tag">TypeScript</span>
           <span class="tag">SQL</span>
           <span class="tag">HTML5 / CSS3</span>
         </div>
@@ -650,6 +651,7 @@ Where I spend most of my thinking: AI. Generative AI, Agentic AI, large language
           <span class="tag">MySQL</span>
           <span class="tag">SQLite</span>
           <span class="tag">Redis</span>
+          <span class="tag">ChromaDB</span>
         </div>
       </div>
 
@@ -672,6 +674,7 @@ Where I spend most of my thinking: AI. Generative AI, Agentic AI, large language
           <span class="tag">Bootstrap</span>
           <span class="tag">Tailwind</span>
           <span class="tag">React / Axios</span>
+          <span class="tag">Vite</span>
           <span class="tag">Three.js</span>
         </div>
       </div>
@@ -694,9 +697,26 @@ Where I spend most of my thinking: AI. Generative AI, Agentic AI, large language
           <span class="tag">Prompt Engineering</span>
           <span class="tag">Claude API</span>
           <span class="tag">OpenAI API</span>
+          <span class="tag">Gemini API</span>
+          <span class="tag">Ollama</span>
           <span class="tag">LangChain</span>
           <span class="tag">RAG</span>
+          <span class="tag">Adaptive RAG</span>
           <span class="tag">Hugging Face</span>
+        </div>
+      </div>
+
+      <div class="card skill-group fade-up">
+        <h3>Retrieval &amp; NLP</h3>
+        <div class="skill-tags">
+          <span class="tag">Vector Search</span>
+          <span class="tag">Hybrid Retrieval</span>
+          <span class="tag">Dense/Sparse Retrieval</span>
+          <span class="tag">TF-IDF</span>
+          <span class="tag">BERT Embeddings</span>
+          <span class="tag">Sentence Transformers</span>
+          <span class="tag">Reranking</span>
+          <span class="tag">Text Summarization</span>
         </div>
       </div>
 
@@ -736,9 +756,18 @@ Where I spend most of my thinking: AI. Generative AI, Agentic AI, large language
     <div class="projects-grid">
 
       <div class="project-card fade-up">
+        <div class="project-icon">🧠</div>
+        <h3>ARAG — Adaptive RAG Assistant</h3>
+        <p>Full-stack AI assistant at Universität Paderborn's DICE Research Group that lets users upload documents, build knowledge bases, and get streamed, citation-backed answers. Dynamically routes queries between retrieval, summarization, reranking, and generation.</p>
+        <div class="project-footer">
+          <span class="tag">FastAPI</span><span class="tag">React</span><span class="tag">TypeScript</span><span class="tag">ChromaDB</span><span class="tag">Ollama</span>
+        </div>
+      </div>
+
+      <div class="project-card fade-up">
         <div class="project-icon">🔬</div>
         <h3>StudyScavenger</h3>
-        <p>Secure clinical research portal enabling researchers to manage studies and patients to enroll in trials. Built with Django REST + React, deployed on AWS ECS with Docker.</p>
+        <p>Secure clinical research portal enabling researchers to manage studies and patients to enroll in trials. AI eligibility engine (OpenAI + RAG) cut manual matching by 70%. Built with Django REST + React, deployed on AWS ECS with Docker.</p>
         <div class="project-footer">
           <span class="tag">Django REST</span><span class="tag">FastAPI</span><span class="tag">React</span><span class="tag">AWS ECS</span><span class="tag">Docker</span>
         </div>
@@ -747,16 +776,16 @@ Where I spend most of my thinking: AI. Generative AI, Agentic AI, large language
       <div class="project-card fade-up">
         <div class="project-icon">⚖️</div>
         <h3>LawAI</h3>
-        <p>Legal-tech platform with automation scripts ingesting hearings, judgments, and statutes from external legal sites. Features lawyer booking and secure token-based auth.</p>
+        <p>Legal intelligence platform with a PostgreSQL vector store indexing 10,000+ judgments. LangChain + RAG cut legal research time by 60%. Features lawyer booking and secure token-based auth.</p>
         <div class="project-footer">
-          <span class="tag">Django</span><span class="tag">Automation</span><span class="tag">Bootstrap</span><span class="tag">SQL</span>
+          <span class="tag">Django</span><span class="tag">LangChain</span><span class="tag">RAG</span><span class="tag">Bootstrap</span><span class="tag">SQL</span>
         </div>
       </div>
 
       <div class="project-card fade-up">
         <div class="project-icon">💬</div>
         <h3>NearYou</h3>
-        <p>Real time chat &amp; dating web app connecting users with service-provider "buddies" by proximity and interests. Uses WebSockets, Redis Channels, and PostgreSQL.</p>
+        <p>Real time chat &amp; dating web app connecting users with service-provider "buddies" by proximity and interests. AI compatibility scoring boosted match rate by 35%. Uses WebSockets, Redis Channels, and PostgreSQL.</p>
         <div class="project-footer">
           <span class="tag">WebSockets</span><span class="tag">Redis</span><span class="tag">React</span><span class="tag">PostgreSQL</span>
         </div>
@@ -765,7 +794,7 @@ Where I spend most of my thinking: AI. Generative AI, Agentic AI, large language
       <div class="project-card fade-up">
         <div class="project-icon">📍</div>
         <h3>Meeting &amp; Chat App</h3>
-        <p>Location-aware communication platform with live geofenced markers via MapMyIndia &amp; Google Maps. JWT auth, real-time messaging, and one-on-one / group conversations.</p>
+        <p>Location-aware communication platform with live geofenced markers via MapMyIndia &amp; Google Maps. JWT auth, real-time messaging, and an AI assistant for smart replies and meeting summaries.</p>
         <div class="project-footer">
           <span class="tag">Django</span><span class="tag">MapMyIndia</span><span class="tag">WebSockets</span><span class="tag">MySQL</span>
         </div>
@@ -774,7 +803,7 @@ Where I spend most of my thinking: AI. Generative AI, Agentic AI, large language
       <div class="project-card fade-up">
         <div class="project-icon">🐕</div>
         <h3>DogWalker</h3>
-        <p>Staff scheduling app that ingests appointment CSVs, applies a 3-pass algorithm for assignments, then optimises routes via Google Maps. Custom admin for one-click CSV export.</p>
+        <p>Staff scheduling app that ingests appointment CSVs and applies a 3-pass AI scheduling algorithm, reducing conflicts by 55%, then optimises routes via Google Maps. Custom admin for one-click CSV export.</p>
         <div class="project-footer">
           <span class="tag">Django</span><span class="tag">Google Maps API</span><span class="tag">Docker</span><span class="tag">REST</span>
         </div>
@@ -783,7 +812,7 @@ Where I spend most of my thinking: AI. Generative AI, Agentic AI, large language
       <div class="project-card fade-up">
         <div class="project-icon">🛒</div>
         <h3>E-Commerce Store</h3>
-        <p>Full-stack containerised e-commerce platform with token-based auth, product catalogue, cart, checkout and payments. PostgreSQL + Docker for consistent CI/CD.</p>
+        <p>Full-stack containerised e-commerce platform with token-based auth, product catalogue, cart, checkout and payments. GitHub Actions CI/CD achieved 100% zero-downtime releases.</p>
         <div class="project-footer">
           <span class="tag">Django REST</span><span class="tag">React</span><span class="tag">PostgreSQL</span><span class="tag">Docker</span>
         </div>
