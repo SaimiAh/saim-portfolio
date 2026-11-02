@@ -3,25 +3,246 @@
 {% block title %}Resume — Saim Ahmad{% endblock %}
 
 {% block extra_css %}
-.resume-page { padding: 80px 0; }
-.resume-header { text-align: center; margin-bottom: 64px; }
-.resume-header h1 { font-size: 48px; font-weight: 800; margin-bottom: 8px; }
-.resume-header p { color: var(--muted); font-size: 15px; }
+.resume-page { padding: 72px 0 96px; }
 
-.resume-download {
-  display: flex; gap: 12px; justify-content: center; margin-top: 24px; flex-wrap: wrap;
+@keyframes resumeSpin { to { transform: rotate(360deg); } }
+
+/* ── PROFILE HEADER ───────────────────────── */
+.resume-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 40px;
+  align-items: center;
+  padding: 40px 44px;
+  margin-bottom: 36px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(0,229,255,.08), rgba(168,85,247,.06) 55%, rgba(var(--ov),.02)), rgba(var(--surface),.82);
+  border: 1px solid rgba(0,229,255,.2);
+  box-shadow:
+    inset 0 1px 0 rgba(var(--ov),.07),
+    0 30px 60px -30px rgba(var(--shadow),.9),
+    0 0 50px -24px rgba(0,229,255,.35);
 }
 
-.resume-section { margin-bottom: 56px; }
+.resume-hero::before {
+  content: '';
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  right: -140px;
+  top: -180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,229,255,.16), transparent 70%);
+  pointer-events: none;
+}
+
+.resume-photo {
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+
+/* Spinning gradient ring around the photo */
+.resume-photo::before {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  background: conic-gradient(var(--accent), var(--accent2), transparent 70%, var(--accent));
+  filter: drop-shadow(0 0 12px rgba(0,229,255,.5));
+  animation: resumeSpin 6s linear infinite;
+}
+
+.resume-photo img {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  border: 4px solid var(--bg2);
+}
+
+.resume-hero h1 {
+  font-size: clamp(36px, 5vw, 52px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+  text-shadow: 0 12px 30px rgba(var(--shadow),.5);
+}
+
+.resume-hero h1 .grad {
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.resume-role { color: var(--text-2); font-size: 15px; margin-bottom: 18px; }
+
+.resume-contacts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+
+.resume-contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px 5px 5px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--text);
+  text-decoration: none;
+  background: rgba(var(--ov),.05);
+  border: 1px solid rgba(var(--ov),.1);
+  transition: transform .2s, border-color .2s, color .2s, box-shadow .2s;
+}
+
+.resume-contact img {
+  width: 26px;
+  height: 26px;
+  padding: 5px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: rgba(var(--ov),.09);
+}
+
+.resume-contact:hover {
+  transform: translateY(-2px);
+  color: var(--accent);
+  border-color: rgba(0,229,255,.4);
+  box-shadow: 0 8px 20px -8px rgba(0,229,255,.5);
+}
+
+.resume-download { display: flex; gap: 12px; flex-wrap: wrap; }
+
+@media (max-width: 720px) {
+  .resume-hero { grid-template-columns: 1fr; text-align: center; padding: 32px 22px; gap: 24px; }
+  .resume-photo { margin: 0 auto; width: 120px; height: 120px; }
+  .resume-contacts, .resume-download { justify-content: center; }
+}
+
+/* ── LAYOUT: sticky section menu + content ── */
+.resume-layout {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+
+.resume-nav {
+  position: sticky;
+  top: 88px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(var(--surface),.75);
+  border: 1px solid var(--border);
+  -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
+  box-shadow: 0 20px 40px -24px rgba(var(--shadow),.9);
+}
+
+.resume-nav a {
+  position: relative;
+  display: block;
+  padding: 9px 12px 9px 18px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color .2s, background .2s;
+}
+
+.resume-nav a::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  width: 3px;
+  height: 0;
+  translate: 0 -50%;
+  border-radius: 3px;
+  background: linear-gradient(var(--accent), var(--accent2));
+  box-shadow: 0 0 8px rgba(0,229,255,.6);
+  transition: height .25s;
+}
+
+.resume-nav a:hover { color: var(--text); background: rgba(var(--ov),.04); }
+.resume-nav a.active { color: var(--text); background: rgba(0,229,255,.08); }
+.resume-nav a.active::before { height: 60%; }
+
+@media (max-width: 900px) {
+  .resume-layout { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .resume-nav {
+    top: 66px;
+    z-index: 50;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 6px;
+    scrollbar-width: none;
+  }
+  .resume-nav::-webkit-scrollbar { display: none; }
+  .resume-nav a { white-space: nowrap; padding: 7px 12px; }
+  .resume-nav a::before { display: none; }
+}
+
+/* ── SECTIONS ─────────────────────────────── */
+.resume-main { counter-reset: rsec; min-width: 0; }
+
+.resume-section {
+  margin-bottom: 28px;
+  padding: 32px;
+  scroll-margin-top: 90px;
+}
+
+/* Big content blocks keep still on hover; only the border glows */
+.resume-section:hover { --lift: 0px; }
+
 .resume-section h2 {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   font-family: var(--mono);
   font-size: 13px;
   letter-spacing: 0.14em;
   color: var(--accent);
   text-transform: uppercase;
-  margin-bottom: 24px;
-  padding-bottom: 10px;
+  margin-bottom: 26px;
+  padding-bottom: 14px;
   border-bottom: 1px solid var(--border);
+  counter-increment: rsec;
+}
+
+/* Numbered badge, generated from a counter */
+.resume-section h2::before {
+  content: counter(rsec, decimal-leading-zero);
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--on-accent);
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  box-shadow: 0 6px 14px -4px rgba(0,229,255,.55);
+}
+
+.resume-section h2::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 72px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent), transparent);
 }
 
 .resume-row {
@@ -29,36 +250,159 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 16px;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
   flex-wrap: wrap;
 }
 
+.resume-row-left { flex: 1; min-width: 240px; }
 .resume-row-left h3 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
 .resume-row-left .org { font-size: 14px; color: var(--accent); font-family: var(--mono); }
-.resume-row-left .desc { font-size: 14px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
-.resume-row-right { font-size: 12px; color: var(--muted); font-family: var(--mono); white-space: nowrap; }
+.resume-row-left .desc { font-size: 14px; color: var(--text-2); margin-top: 8px; line-height: 1.6; }
 
-.resume-list {
-  margin-top: 8px;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.8;
-  padding-left: 20px;
+/* Date as a pill */
+.resume-row-right {
+  font-size: 11.5px;
+  color: var(--accent);
+  font-family: var(--mono);
+  white-space: nowrap;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(0,229,255,.08);
+  border: 1px solid rgba(0,229,255,.22);
 }
 
-.resume-list li { margin-bottom: 4px; }
+/* Timeline for experience, projects and education */
+.resume-timeline .resume-row { position: relative; padding-left: 30px; }
+
+.resume-timeline .resume-row::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 0 4px rgba(0,229,255,.1), 0 0 12px rgba(0,229,255,.6);
+}
+
+.resume-timeline .resume-row::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 26px;
+  bottom: -38px;
+  width: 2px;
+  border-radius: 2px;
+  background: linear-gradient(rgba(0,229,255,.5), rgba(168,85,247,.2));
+}
+
+.resume-timeline .resume-row:last-child::after { display: none; }
+
+.resume-list {
+  list-style: none;
+  margin-top: 12px;
+  padding: 0;
+  color: var(--text-2);
+  font-size: 14px;
+  line-height: 1.75;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.resume-list li { position: relative; padding-left: 20px; }
+
+.resume-list li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: .72em;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  box-shadow: 0 0 8px rgba(0,229,255,.5);
+}
+
+/* Skills + languages as small tiles */
+.resume-skills,
+.resume-langs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.resume-skills > div,
+.resume-langs > div {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(var(--ov),.025);
+  border: 1px solid var(--border);
+  transition: border-color .2s, background .2s;
+}
+
+.resume-skills > div:hover,
+.resume-langs > div:hover {
+  border-color: rgba(0,229,255,.25);
+  background: rgba(0,229,255,.04);
+}
+
+@media (max-width: 600px) {
+  .resume-skills, .resume-langs { grid-template-columns: minmax(0, 1fr); }
+  .resume-section { padding: 24px 20px; }
+}
 
 .skills-resume { display: flex; flex-wrap: wrap; gap: 8px; }
 
+/* Proficiency bar (CEFR level out of 6) */
+.lang-bar {
+  margin-top: 12px;
+  height: 6px;
+  border-radius: 6px;
+  background: rgba(var(--ov),.07);
+  overflow: hidden;
+}
+
+.lang-bar span {
+  display: block;
+  height: 100%;
+  width: var(--level);
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  box-shadow: 0 0 10px rgba(0,229,255,.5);
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 1.4s cubic-bezier(.2,.8,.2,1) .2s;
+}
+
+.visible .lang-bar span { transform: scaleX(1); }
+
+/* ── FLOATING QR ──────────────────────────── */
 .qr-float {
   position: fixed;
-  bottom: 32px;
-  left: 32px;
+  bottom: 28px;
+  left: 28px;
   z-index: 200;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  padding: 10px 10px 8px;
+  border-radius: 16px;
+  background: rgba(var(--surface),.85);
+  border: 1px solid rgba(0,229,255,.25);
+  -webkit-backdrop-filter: blur(12px);
+          backdrop-filter: blur(12px);
+  box-shadow: 0 20px 40px -16px rgba(var(--shadow),.85), 0 0 24px -8px rgba(0,229,255,.35);
+  transition: transform .3s, box-shadow .3s;
+}
+
+.qr-float:hover {
+  transform: translateY(-4px) scale(1.04);
+  box-shadow: 0 26px 48px -16px rgba(var(--shadow),.9), 0 0 32px -6px rgba(0,229,255,.5);
 }
 
 .qr-float-label {
@@ -71,41 +415,59 @@
 
 .qr-float-box {
   background: white;
-  padding: 8px;
+  padding: 6px;
   border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0,229,255,0.2);
-  transition: transform .3s, box-shadow .3s;
 }
 
-.qr-float-box:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 32px rgba(0,229,255,0.4);
+/* On smaller screens the QR would cover the content */
+@media (max-width: 900px) { .qr-float { display: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .resume-photo::before { animation: none; }
+  .lang-bar span { transition: none; }
 }
 {% endblock %}
 
 {% block content %}
 <section class="resume-page">
-  <div class="container" style="max-width:800px;">
+  <div class="container">
 
-    <div class="resume-header fade-up">
-      <h1>Saim <span style="background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Ahmad</span></h1>
-      <p>Full Stack Software Engineer · Backend · Frontend · AI Engineer · Munich, Germany</p>
-      <p style="margin-top:4px;">
-        <a href="mailto:ah.saim786@gmail.com" style="color:var(--accent);text-decoration:none;">ah.saim786@gmail.com</a> ·
-        <a href="tel:+491751464164" style="color:var(--accent);text-decoration:none;">+49 175 1464164</a> ·
-        <a href="https://github.com/SaimiAh" target="_blank" style="color:var(--accent);text-decoration:none;">Github</a> ·
-        <a href="https://linkedin.com/in/saimahmad-/" target="_blank" style="color:var(--accent);text-decoration:none;">LinkedIn</a>
-      </p>
-      <div class="resume-download">
-        <a href="{% static 'portfolio/files/SaimAhmadCV.pdf' %}"
-           download="SaimAhmad-CV.pdf"
-           class="btn btn-primary">⬇ Download CV</a>
-        <a href="/" class="btn btn-outline">← Back to Portfolio</a>
+    <div class="resume-hero fade-up">
+      <div class="resume-photo">
+        <img src="{% static 'portfolio/img/saim.jpg' %}" alt="Saim Ahmad" />
+      </div>
+      <div class="resume-hero-info">
+        <h1>Saim <span class="grad">Ahmad</span></h1>
+        <p class="resume-role">Full Stack Software Engineer · Backend · Frontend · AI Engineer · Munich, Germany</p>
+        <div class="resume-contacts">
+          <a href="mailto:ah.saim786@gmail.com" class="resume-contact"><img src="{% static 'portfolio/img/email.png' %}" alt="" />ah.saim786@gmail.com</a>
+          <a href="tel:+491751464164" class="resume-contact"><img src="{% static 'portfolio/img/phone.png' %}" alt="" />+49 175 1464164</a>
+          <a href="https://github.com/SaimiAh" target="_blank" class="resume-contact"><img src="{% static 'portfolio/img/github.png' %}" alt="" />GitHub</a>
+          <a href="https://linkedin.com/in/saimahmad-/" target="_blank" class="resume-contact"><img src="{% static 'portfolio/img/linkedin.png' %}" alt="" />LinkedIn</a>
+        </div>
+        <div class="resume-download">
+          <a href="{% static 'portfolio/files/SaimAhmadCV.pdf' %}"
+             download="SaimAhmad-CV.pdf"
+             class="btn btn-primary">⬇ Download CV</a>
+          <a href="/" class="btn btn-outline">← Back to Portfolio</a>
+        </div>
       </div>
     </div>
 
+    <div class="resume-layout">
+      <aside class="resume-nav" aria-label="Resume sections">
+        <a href="#profile">Profile</a>
+        <a href="#experience">Experience</a>
+        <a href="#academic-projects">Academic Projects</a>
+        <a href="#education">Education</a>
+        <a href="#skills">Skills</a>
+        <a href="#languages">Languages</a>
+      </aside>
+
+      <div class="resume-main">
+
     <!-- Profile -->
-    <div class="card resume-section fade-up">
+    <div class="card resume-section fade-up" id="profile">
       <h2>Profile</h2>
       <p style="color:var(--muted);font-size:15px;line-height:1.7;">
         Full Stack Software Engineer and Artificial Intelligence Engineer with 3 years of production experience building end-to-end applications across Backend Development (Python, Django, FastAPI, PostgreSQL, Redis), Frontend Development (React, JavaScript, Tailwind), Cloud Infrastructure (AWS EC2/ECS/S3, Docker, CI/CD), and AI Integration (LangChain, RAG, OpenAI API, Claude API). Delivered 20+ production-grade applications spanning Full Stack, Cloud-native, and Agentic AI architectures. Currently advancing expertise through an MSc in Computer Science at Universität Paderborn, Germany.
@@ -113,7 +475,7 @@
     </div>
 
     <!-- Experience -->
-    <div class="card resume-section fade-up">
+    <div class="card resume-section resume-timeline fade-up" id="experience">
       <h2>Experience</h2>
 
       <div class="resume-row">
@@ -183,7 +545,7 @@
     </div>
 
     <!-- Academic Projects -->
-    <div class="card resume-section fade-up">
+    <div class="card resume-section resume-timeline fade-up" id="academic-projects">
       <h2>Academic Projects</h2>
 
       <div class="resume-row">
@@ -221,7 +583,7 @@
     </div>
 
     <!-- Education -->
-    <div class="card resume-section fade-up">
+    <div class="card resume-section resume-timeline fade-up" id="education">
       <h2>Education</h2>
 
       <div class="resume-row">
@@ -243,9 +605,9 @@
     </div>
 
     <!-- Skills -->
-    <div class="card resume-section fade-up">
+    <div class="card resume-section fade-up" id="skills">
       <h2>Skills</h2>
-      <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="resume-skills">
         <div>
           <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px;">LANGUAGES</p>
           <div class="skills-resume"><span class="tag">Python</span><span class="tag">JavaScript</span><span class="tag">TypeScript</span><span class="tag">SQL</span><span class="tag">HTML5 / CSS3</span></div>
@@ -294,17 +656,22 @@
     </div>
 
     <!-- Languages -->
-    <div class="card resume-section fade-up">
+    <div class="card resume-section fade-up" id="languages">
       <h2>Languages</h2>
-      <div style="display:flex;gap:32px;flex-wrap:wrap;">
+      <div class="resume-langs">
         <div>
           <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px;">ENGLISH</p>
           <span class="tag">C1 — Advanced</span>
+          <div class="lang-bar"><span style="--level: 83.3%;"></span></div>
         </div>
         <div>
           <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:8px;">GERMAN</p>
           <span class="tag">A1 — Beginner</span>
+          <div class="lang-bar"><span style="--level: 16.7%;"></span></div>
         </div>
+      </div>
+    </div>
+
       </div>
     </div>
 
@@ -331,5 +698,26 @@
     colorDark: "#000000",
     colorLight: "#ffffff",
   });
+
+  // Highlight the section menu item for the section in view
+  (function () {
+    const links = [...document.querySelectorAll('.resume-nav a')];
+    const sections = links.map(a => document.querySelector(a.getAttribute('href')));
+    const nav = document.querySelector('.resume-nav');
+    let last = -1;
+    function update() {
+      let current = 0;
+      sections.forEach((s, i) => { if (s && s.getBoundingClientRect().top < window.innerHeight * 0.3) current = i; });
+      if (current === last) return;
+      last = current;
+      links.forEach((a, i) => a.classList.toggle('active', i === current));
+      // Keep the active chip visible in the horizontal mobile menu
+      if (nav.scrollWidth > nav.clientWidth) {
+        nav.scrollTo({ left: links[current].offsetLeft - 12, behavior: 'smooth' });
+      }
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  })();
 </script>
 {% endblock %}

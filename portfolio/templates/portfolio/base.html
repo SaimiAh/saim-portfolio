@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Apply the saved theme before first paint (dark is the default) -->
+  <script>try { if (localStorage.getItem('theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}</script>
   <title>{% block title %}Saim Ahmad — Software Developer{% endblock %}</title>
   <meta name="description" content="Saim Ahmad — Software Engineer, Full Stack & AI. Specialist in Python, Django, React, Generative AI and Agentic AI systems. Based in Munich, Germany." />
   <!-- Fonts -->
@@ -24,11 +26,49 @@
       --glow:      rgba(0, 229, 255, 0.18);
       --text:      #e2e8f0;
       --muted:     #64748b;
-      --card:      rgba(255,255,255,0.035);
-      --border:    rgba(255,255,255,0.07);
+      --card:      rgba(var(--ov),0.035);
+      --border:    rgba(var(--ov),0.07);
       --radius:    12px;
       --mono:      'JetBrains Mono', monospace;
       --sans:      'Outfit', sans-serif;
+
+      /* Theme tokens (RGB triplets are used as rgba(var(--x), alpha)) */
+      --ov:          255,255,255;  /* subtle overlays, borders, highlights */
+      --surface:     10,15,26;     /* opaque base under glass cards */
+      --band:        12,18,32;     /* section bands */
+      --panel:       17,24,39;     /* chat window, palette, pop-ups */
+      --deep:        7,11,18;      /* navbar glass */
+      --scrim:       3,6,12;       /* modal backdrops */
+      --shadow:      0,0,0;
+      --text-1:      #cbd5e1;
+      --text-2:      #94a3b8;
+      --text-3:      #a3b1c6;
+      --text-strong: #fff;
+      --on-accent:   #070b12;      /* text on cyan/purple gradients */
+      color-scheme: dark;
+    }
+
+    /* ── LIGHT THEME ─────────────────────────── */
+    :root[data-theme="light"] {
+      --bg:        #f5f7fb;
+      --bg2:       #eaf0f7;
+      --bg3:       #e2e8f0;
+      --accent:    #0891b2;
+      --accent2:   #9333ea;
+      --text:      #0f172a;
+      --muted:     #5b6b82;
+      --ov:          15,23,42;
+      --surface:     255,255,255;
+      --band:        234,240,247;
+      --panel:       255,255,255;
+      --deep:        245,247,251;
+      --scrim:       100,116,139;
+      --shadow:      71,85,105;
+      --text-1:      #334155;
+      --text-2:      #475569;
+      --text-3:      #475569;
+      --text-strong: #0f172a;
+      color-scheme: light;
     }
 
     html { scroll-behavior: smooth; }
@@ -62,29 +102,222 @@
       justify-content: space-between;
       padding: 0 48px;
       height: 64px;
-      background: rgba(7, 11, 18, 0.75);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: rgba(var(--deep), 0.6);
+      backdrop-filter: blur(16px) saturate(150%);
+      -webkit-backdrop-filter: blur(16px) saturate(150%);
       border-bottom: 1px solid var(--border);
+      transition: height .3s, background .3s, box-shadow .3s;
     }
 
+    nav.scrolled {
+      height: 56px;
+      background: rgba(var(--deep), 0.85);
+      box-shadow: 0 10px 30px -10px rgba(var(--shadow),.7);
+    }
+
+    /* Scroll progress bar */
+    #scroll-progress {
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 101;
+      height: 2px;
+      width: 100%;
+      transform-origin: left;
+      transform: scaleX(0);
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 10px rgba(0,229,255,.6);
+      pointer-events: none;
+    }
+
+    /* Soft spotlight that follows the cursor */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: radial-gradient(600px circle at var(--cx, 50%) var(--cy, -20%), rgba(0,229,255,.06), transparent 60%);
+    }
+
+    /* Terminal-style typing logo (text is typed/deleted by JS) */
     .nav-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      min-width: 196px; /* fits the full name so the menu never shifts while typing */
+      height: 36px;
+      padding: 0 14px 0 10px;
+      border-radius: 10px;
       font-family: var(--mono);
       font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
       color: var(--text);
       text-decoration: none;
-      letter-spacing: 0.04em;
-      min-width: 135px;
-      display: inline-block;
+      background: rgba(var(--ov),.03);
+      border: 1px solid rgba(var(--ov),.06);
+      box-shadow: inset 0 1px 0 rgba(var(--ov),.05);
+      transition: border-color .3s, box-shadow .3s, background .3s;
     }
+
+    .nav-logo:hover {
+      border-color: rgba(0,229,255,.3);
+      background: rgba(0,229,255,.05);
+      box-shadow: inset 0 1px 0 rgba(var(--ov),.06), 0 0 22px -8px rgba(0,229,255,.6);
+    }
+
+    .logo-prompt {
+      margin-right: 6px;
+      font-size: 13px;
+      color: #22c55e;
+      text-shadow: 0 0 10px rgba(34,197,94,.7);
+    }
+
+    .logo-brace {
+      color: var(--accent);
+      text-shadow: 0 0 12px rgba(0,229,255,.7);
+    }
+
+    .logo-brace.close { color: var(--accent2); text-shadow: 0 0 12px rgba(168,85,247,.7); }
+
+    .logo-text {
+      background: linear-gradient(90deg, #fff, #b8f6ff 60%, var(--accent));
+      -webkit-background-clip: text;
+              background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* The most recently typed letter flashes in */
+    .logo-new {
+      display: inline-block;
+      color: var(--text-strong);
+      -webkit-text-fill-color: var(--text-strong);
+      text-shadow: 0 0 12px var(--accent), 0 0 4px #fff;
+      animation: logoChar .35s ease-out both;
+    }
+
+    @keyframes logoChar {
+      from { opacity: 0; transform: translateY(-6px) scale(1.3); filter: blur(2px); }
+      to   { opacity: 1; transform: none; filter: none; }
+    }
+
     .cursor {
       display: inline-block;
-      color: var(--accent);
-      animation: blink .7s step-end infinite;
+      width: 2px;
+      height: 1.1em;
+      margin-left: 3px;
+      border-radius: 2px;
+      background: linear-gradient(var(--accent), var(--accent2));
+      box-shadow: 0 0 10px var(--accent);
+      animation: blink .9s steps(2) infinite;
     }
+
     @keyframes blink { 50% { opacity: 0; } }
 
-    .nav-logo span { color: var(--text); }
+    /* Right-hand group: search + Hire Me */
+    .nav-actions { display: flex; align-items: center; gap: 12px; }
+
+    .nav-search {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      height: 36px;
+      padding: 0 8px 0 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(var(--ov),.1);
+      background: rgba(var(--ov),.04);
+      color: var(--muted);
+      font: 500 13px var(--sans);
+      cursor: pointer;
+      transition: color .2s, border-color .2s, background .2s, box-shadow .2s;
+    }
+
+    .nav-search:hover {
+      color: var(--text);
+      border-color: rgba(0,229,255,.35);
+      background: rgba(0,229,255,.06);
+      box-shadow: 0 0 20px -8px rgba(0,229,255,.6);
+    }
+
+    .nav-search svg { width: 15px; height: 15px; fill: currentColor; }
+
+    .nav-search kbd {
+      font: 600 10.5px var(--mono);
+      padding: 3px 6px;
+      border-radius: 6px;
+      color: var(--accent);
+      background: rgba(0,229,255,.08);
+      border: 1px solid rgba(0,229,255,.25);
+    }
+
+    @media (max-width: 1100px) {
+      .nav-search span, .nav-search kbd { display: none; }
+      .nav-search { padding: 0 10px; }
+    }
+
+    /* Theme switch: moon (dark) / sun (light) flip in 3D */
+    .theme-toggle {
+      position: relative;
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border-radius: 10px;
+      border: 1px solid rgba(var(--ov),.1);
+      background: rgba(var(--ov),.04);
+      cursor: pointer;
+      perspective: 200px;
+      transition: border-color .2s, background .2s, box-shadow .2s;
+    }
+
+    .theme-toggle:hover {
+      border-color: rgba(0,229,255,.35);
+      background: rgba(0,229,255,.06);
+      box-shadow: 0 0 20px -8px rgba(0,229,255,.6);
+    }
+
+    .theme-toggle svg {
+      position: absolute;
+      width: 17px;
+      height: 17px;
+      backface-visibility: hidden;
+      transition: transform .6s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+    }
+
+    .theme-toggle .moon { fill: #a5f3fc; filter: drop-shadow(0 0 6px rgba(0,229,255,.6)); }
+    .theme-toggle .sun  { fill: #f59e0b; filter: drop-shadow(0 0 6px rgba(245,158,11,.6)); opacity: 0; transform: rotateY(180deg) scale(.4); }
+
+    [data-theme="light"] .theme-toggle .moon { opacity: 0; transform: rotateY(-180deg) scale(.4); }
+    [data-theme="light"] .theme-toggle .sun  { opacity: 1; transform: none; }
+
+    /* Circular reveal when switching theme (View Transitions) */
+    html.theme-switching::view-transition-old(root),
+    html.theme-switching::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+
+    /* Light-theme touch-ups for gradients/glows that don't map to tokens */
+    [data-theme="light"] .logo-text,
+    [data-theme="light"] .chat-header-info h4 {
+      background: linear-gradient(90deg, #0f172a, #0e7490);
+      -webkit-background-clip: text;
+              background-clip: text;
+    }
+
+    [data-theme="light"] .logo-prompt { color: #16a34a; text-shadow: none; }
+    [data-theme="light"] .logo-new { -webkit-text-fill-color: #0e7490; color: #0e7490; text-shadow: 0 0 10px rgba(8,145,178,.4); }
+
+    [data-theme="light"] .btn-primary {
+      background: linear-gradient(180deg, #67e8f9, #22d3ee);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 4px 0 #0891b2, 0 12px 26px -10px rgba(8,145,178,.55);
+    }
+
+    [data-theme="light"] .btn-primary:hover {
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 6px 0 #0891b2, 0 18px 32px -10px rgba(8,145,178,.6);
+    }
+
+    [data-theme="light"] .form-control { background: rgba(255,255,255,.9); box-shadow: inset 0 1px 3px rgba(71,85,105,.15); }
+    [data-theme="light"] .form-control:focus { background: #fff; }
+    [data-theme="light"] body::before { background: radial-gradient(600px circle at var(--cx, 50%) var(--cy, -20%), rgba(8,145,178,.07), transparent 60%); }
 
     .nav-links {
       display: flex;
@@ -93,29 +326,54 @@
     }
 
     .nav-links a {
+      position: relative;
       font-size: 13.5px;
       font-weight: 500;
       color: var(--muted);
       text-decoration: none;
       letter-spacing: 0.03em;
+      padding: 6px 0;
       transition: color .2s;
     }
 
-    .nav-links a:hover { color: var(--accent); }
+    /* Animated underline; stays on for the section in view */
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 2px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 8px rgba(0,229,255,.6);
+      transform: scaleX(0);
+      transition: transform .3s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--text); }
+    .nav-links a:hover::after,
+    .nav-links a.active::after { transform: scaleX(1); }
 
     .nav-cta {
       font-family: var(--mono);
       font-size: 12px;
-      padding: 7px 20px;
-      border: 1px solid var(--accent);
-      border-radius: 4px;
+      padding: 8px 20px;
+      border: 1px solid rgba(0,229,255,.6);
+      border-radius: 8px;
       color: var(--accent);
       text-decoration: none;
       letter-spacing: 0.06em;
-      transition: background .2s, color .2s;
+      background: rgba(0,229,255,.06);
+      box-shadow: inset 0 1px 0 rgba(var(--ov),.08), 0 0 18px -6px rgba(0,229,255,.5);
+      transition: background .2s, color .2s, box-shadow .2s, transform .2s;
     }
 
-    .nav-cta:hover { background: var(--accent); color: var(--bg); }
+    .nav-cta:hover {
+      background: var(--accent);
+      color: var(--on-accent);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px -6px rgba(0,229,255,.7);
+    }
 
     /* hamburger */
     .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
@@ -134,6 +392,9 @@
     }
 
     .section-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       font-family: var(--mono);
       font-size: 12px;
       color: var(--accent);
@@ -142,12 +403,22 @@
       margin-bottom: 12px;
     }
 
+    .section-label::before {
+      content: '';
+      width: 32px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 8px rgba(0,229,255,.6);
+    }
+
     .section-title {
-      font-size: clamp(28px, 4vw, 40px);
-      font-weight: 700;
-      line-height: 1.2;
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
       margin-bottom: 48px;
       color: var(--text);
+      text-shadow: 0 10px 30px rgba(var(--shadow),.5);
     }
 
     .section-title em {
@@ -160,56 +431,118 @@
 
     /* ── CARDS ───────────────────────────────── */
     .card {
-      background: var(--card);
+      background: linear-gradient(145deg, rgba(var(--ov),0.055), rgba(var(--ov),0.015)), rgba(var(--surface),.82);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 28px;
-      transition: border-color .3s, transform .3s, box-shadow .3s;
+      box-shadow:
+        inset 0 1px 0 rgba(var(--ov),0.06),
+        0 12px 32px -16px rgba(var(--shadow),0.8);
+      transition: border-color .3s, transform .4s cubic-bezier(.2,.8,.2,1), box-shadow .3s;
     }
 
     .card:hover {
+      --lift: -6px;
       border-color: rgba(0, 229, 255, 0.3);
-      transform: translateY(-4px);
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0,229,255,0.08);
+      box-shadow:
+        inset 0 1px 0 rgba(var(--ov),0.08),
+        0 28px 56px -20px rgba(var(--shadow),0.85),
+        0 0 32px -12px rgba(0,229,255,0.35);
     }
+
+    /* ── 3D TILT (class added by JS) ─────────── */
+    .card,
+    .tilt {
+      transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px));
+    }
+
+    .tilt { position: relative; transform-style: preserve-3d; }
+    /* While the cursor is over a card, follow it quickly */
+    .tilt.tilting { transition: transform .12s ease-out, border-color .3s, box-shadow .3s, background .3s; }
+
+    .tilt-glare {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 0%), rgba(var(--ov),0.09), transparent 55%);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+
+    .tilt:hover .tilt-glare { opacity: 1; }
 
     /* ── BUTTONS ─────────────────────────────── */
     .btn {
+      position: relative;
+      overflow: hidden;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 12px 28px;
-      border-radius: 6px;
+      padding: 13px 28px;
+      border-radius: 10px;
       font-size: 14px;
       font-weight: 600;
       text-decoration: none;
-      transition: all .25s;
+      transition: transform .2s, box-shadow .2s, background .2s, border-color .2s, color .2s;
       cursor: pointer;
       border: none;
     }
 
+    /* Light sweep on hover */
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      left: -60%;
+      width: 40%;
+      background: linear-gradient(100deg, transparent, rgba(var(--ov),.35), transparent);
+      transform: skewX(-20deg);
+      transition: left .6s ease;
+      pointer-events: none;
+    }
+
+    .btn:hover::after { left: 130%; }
+
     .btn-primary {
-      background: var(--accent);
-      color: var(--bg);
+      background: linear-gradient(180deg, #4df0ff, var(--accent));
+      color: var(--on-accent);
+      box-shadow:
+        inset 0 1px 0 rgba(var(--ov),.5),
+        0 4px 0 #0093a8,
+        0 12px 28px -8px rgba(0, 229, 255, 0.55);
     }
 
     .btn-primary:hover {
-      background: #33edff;
-      box-shadow: 0 0 24px rgba(0, 229, 255, 0.5);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow:
+        inset 0 1px 0 rgba(var(--ov),.5),
+        0 6px 0 #0093a8,
+        0 18px 36px -8px rgba(0, 229, 255, 0.7);
+    }
+
+    .btn-primary:active {
+      transform: translateY(3px);
+      box-shadow: inset 0 1px 0 rgba(var(--ov),.4), 0 1px 0 #0093a8, 0 6px 14px -6px rgba(0,229,255,.5);
     }
 
     .btn-outline {
-      background: transparent;
+      background: linear-gradient(180deg, rgba(var(--ov),.06), rgba(var(--ov),.02));
       color: var(--text);
-      border: 1px solid var(--border);
+      border: 1px solid rgba(var(--ov),.12);
+      box-shadow: inset 0 1px 0 rgba(var(--ov),.08), 0 4px 0 rgba(var(--shadow),.35), 0 10px 24px -10px rgba(var(--shadow),.7);
+      -webkit-backdrop-filter: blur(8px);
+              backdrop-filter: blur(8px);
     }
 
     .btn-outline:hover {
       border-color: var(--accent);
       color: var(--accent);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: inset 0 1px 0 rgba(var(--ov),.1), 0 6px 0 rgba(var(--shadow),.35), 0 0 24px -6px rgba(0,229,255,.45);
     }
+
+    .btn-outline:active { transform: translateY(3px); box-shadow: inset 0 1px 0 rgba(var(--ov),.08), 0 1px 0 rgba(var(--shadow),.35); }
 
     /* ── TAG CHIPS ───────────────────────────── */
     .tag {
@@ -222,6 +555,14 @@
       color: var(--accent);
       border: 1px solid rgba(0, 229, 255, 0.18);
       letter-spacing: 0.04em;
+      transition: transform .2s, background .2s, border-color .2s, box-shadow .2s;
+    }
+
+    .tag:hover {
+      transform: translateY(-2px);
+      background: rgba(0, 229, 255, 0.14);
+      border-color: rgba(0, 229, 255, 0.4);
+      box-shadow: 0 6px 14px -6px rgba(0,229,255,.45);
     }
 
     .tag.purple {
@@ -236,211 +577,1558 @@
       z-index: 1;
       text-align: center;
       padding: 40px 32px;
-      border-top: 1px solid var(--border);
       color: var(--muted);
       font-size: 13px;
       font-family: var(--mono);
+      background: linear-gradient(180deg, transparent, rgba(var(--band),.8));
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+      opacity: .6;
     }
 
     footer a { color: var(--accent); text-decoration: none; }
 
     /* ── CHATBOT WIDGET ──────────────────────── */
+    @property --chat-angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+
+    /* Launcher — glossy 3D orb */
     .chat-bubble-btn {
       position: fixed;
-      bottom: 32px;
-      right: 32px;
+      bottom: 28px;
+      right: 28px;
       z-index: 200;
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      width: 62px;
+      height: 62px;
+      padding: 0;
       border: none;
+      border-radius: 50%;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 24px rgba(0,229,255,0.4);
-      transition: transform .25s, box-shadow .25s;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 30% 24%, rgba(var(--ov),.6), transparent 30%),
+        radial-gradient(circle at 72% 82%, rgba(168,85,247,.95), transparent 62%),
+        linear-gradient(145deg, #00e5ff, #6d5cff 60%, #a855f7);
+      box-shadow:
+        inset 0 -7px 14px rgba(25,0,70,.5),
+        inset 0 4px 10px rgba(var(--ov),.35),
+        0 12px 26px rgba(var(--shadow),.5),
+        0 0 38px rgba(0,229,255,.45);
+      animation: orbFloat 4s ease-in-out infinite;
+      transition: transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
+    }
+
+    /* Spinning neon ring */
+    .chat-bubble-btn::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, transparent, var(--accent), transparent 40%, var(--accent2), transparent 78%);
+      -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
+              mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
+      animation: chatSpin 3.5s linear infinite;
+    }
+
+    /* Pulse halo */
+    .chat-bubble-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      animation: orbHalo 2.8s ease-out infinite;
     }
 
     .chat-bubble-btn:hover {
-      transform: scale(1.1);
-      box-shadow: 0 6px 32px rgba(0,229,255,0.6);
+      transform: perspective(400px) rotateX(14deg) scale(1.08);
+      box-shadow:
+        inset 0 -7px 14px rgba(25,0,70,.5),
+        inset 0 4px 10px rgba(var(--ov),.4),
+        0 18px 32px rgba(var(--shadow),.55),
+        0 0 52px rgba(0,229,255,.6);
     }
 
-    .chat-bubble-btn svg { width: 24px; height: 24px; fill: var(--bg); }
+    .chat-bubble-btn:active { transform: scale(.94); }
 
+    .chat-bubble-btn svg {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      fill: #fff;
+      filter: drop-shadow(0 2px 3px rgba(var(--shadow),.35));
+      transition: transform .4s cubic-bezier(.34,1.56,.64,1), opacity .25s;
+    }
+
+    .chat-bubble-btn .icon-close { opacity: 0; transform: rotate(-90deg) scale(.4); }
+    .chat-bubble-btn.active .icon-chat { opacity: 0; transform: rotate(90deg) scale(.4); }
+    .chat-bubble-btn.active .icon-close { opacity: 1; transform: none; }
+    .chat-bubble-btn.active,
+    .chat-bubble-btn.active::after { animation: none; }
+
+    @keyframes orbFloat {
+      0%, 100% { translate: 0 0; }
+      50%      { translate: 0 -6px; }
+    }
+
+    @keyframes orbHalo {
+      0%        { box-shadow: 0 0 0 0 rgba(0,229,255,.45); }
+      80%, 100% { box-shadow: 0 0 0 18px rgba(0,229,255,0); }
+    }
+
+    @keyframes chatSpin { to { transform: rotate(360deg); } }
+
+    /* Window — 3D glass panel */
     .chat-window {
       position: fixed;
-      bottom: 104px;
-      right: 32px;
+      bottom: 106px;
+      right: 28px;
       z-index: 200;
-      width: 360px;
-      height: 520px;
-      background: var(--bg2);
-      border: 1px solid rgba(0, 229, 255, 0.25);
-      border-radius: 16px;
+      width: 384px;
+      height: 580px;
+      max-height: calc(100vh - 130px);
       display: flex;
       flex-direction: column;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,229,255,0.1);
-      transform: scale(0.9) translateY(20px);
+      overflow: hidden;
+      border-radius: 22px;
+      background: linear-gradient(160deg, rgba(var(--panel),.9), rgba(var(--deep),.94));
+      -webkit-backdrop-filter: blur(22px) saturate(160%);
+              backdrop-filter: blur(22px) saturate(160%);
+      border: 1px solid rgba(var(--ov),.06);
+      box-shadow:
+        inset 0 1px 0 rgba(var(--ov),.08),
+        0 40px 80px -20px rgba(var(--shadow),.85),
+        0 24px 48px -24px rgba(0,229,255,.3),
+        0 0 0 1px rgba(0,229,255,.06);
+      transform-origin: bottom right;
+      transform: perspective(1200px) translateY(30px) rotateX(20deg) rotateY(-8deg) scale(.86);
       opacity: 0;
       pointer-events: none;
-      transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .25s;
+      transition: transform .55s cubic-bezier(.22,1.2,.36,1), opacity .3s ease;
     }
 
     .chat-window.open {
-      transform: scale(1) translateY(0);
+      transform: perspective(1200px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
       opacity: 1;
       pointer-events: all;
     }
 
+    /* Animated gradient border */
+    .chat-window::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      padding: 1px;
+      border-radius: inherit;
+      background: conic-gradient(from var(--chat-angle),
+        rgba(0,229,255,.75), transparent 25%, rgba(168,85,247,.75) 50%, transparent 75%, rgba(0,229,255,.75));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+              mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      animation: chatBorder 6s linear infinite;
+      pointer-events: none;
+    }
+
+    /* Cursor-following glare */
+    .chat-window::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      border-radius: inherit;
+      background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(var(--ov),.06), transparent 45%);
+      pointer-events: none;
+    }
+
+    @keyframes chatBorder { to { --chat-angle: 360deg; } }
+
+    /* Aurora glow + grid behind content */
+    .chat-aurora {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(var(--ov),.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(var(--ov),.025) 1px, transparent 1px);
+      background-size: 28px 28px;
+      -webkit-mask-image: linear-gradient(180deg, #000, transparent 70%);
+              mask-image: linear-gradient(180deg, #000, transparent 70%);
+    }
+
+    .chat-aurora::before,
+    .chat-aurora::after {
+      content: '';
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      filter: blur(70px);
+      opacity: .22;
+    }
+
+    .chat-aurora::before {
+      background: var(--accent);
+      top: -140px;
+      right: -90px;
+      animation: auroraDrift 12s ease-in-out infinite alternate;
+    }
+
+    .chat-aurora::after {
+      background: var(--accent2);
+      top: 40px;
+      left: -160px;
+      animation: auroraDrift 15s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes auroraDrift {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(-60px, 50px) scale(1.25); }
+    }
+
+    /* Header */
     .chat-header {
+      position: relative;
+      z-index: 1;
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
+      padding: 16px 18px;
+      background: linear-gradient(180deg, rgba(var(--ov),.06), rgba(var(--ov),.01));
+      border-bottom: 1px solid rgba(var(--ov),.07);
+      box-shadow: 0 8px 20px -12px rgba(var(--shadow),.6);
       flex-shrink: 0;
     }
 
     .chat-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--mono);
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--bg);
+      position: relative;
+      width: 44px;
+      height: 44px;
       flex-shrink: 0;
+      isolation: isolate;
     }
 
-    .chat-header-info h4 { font-size: 14px; font-weight: 600; }
-    .chat-header-info p { font-size: 11px; color: #22c55e; }
+    .chat-avatar::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      z-index: -1;
+      border-radius: 50%;
+      background: conic-gradient(var(--accent), var(--accent2), var(--accent));
+      box-shadow: 0 0 16px rgba(0,229,255,.45);
+      animation: chatSpin 5s linear infinite;
+    }
+
+    .chat-avatar img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid var(--bg2);
+    }
+
+    /* Online status dot */
+    .chat-avatar::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #22c55e;
+      border: 2px solid var(--bg2);
+      animation: statusPulse 2s ease-out infinite;
+    }
+
+    @keyframes statusPulse {
+      0%        { box-shadow: 0 0 0 0 rgba(34,197,94,.6); }
+      80%, 100% { box-shadow: 0 0 0 7px rgba(34,197,94,0); }
+    }
+
+    .chat-header-info h4 {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: .2px;
+      background: linear-gradient(90deg, #fff, #b8f6ff);
+      -webkit-background-clip: text;
+              background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .chat-header-info p {
+      font-size: 11.5px;
+      color: #4ade80;
+      margin-top: 2px;
+    }
 
     .chat-close {
       margin-left: auto;
-      background: none;
-      border: none;
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: rgba(var(--ov),.05);
+      border: 1px solid rgba(var(--ov),.08);
       color: var(--muted);
       cursor: pointer;
-      font-size: 18px;
+      font-size: 14px;
       line-height: 1;
-      transition: color .2s;
+      transition: color .2s, background .2s, transform .25s;
     }
 
-    .chat-close:hover { color: var(--text); }
+    .chat-close:hover {
+      color: var(--text);
+      background: rgba(var(--ov),.1);
+      transform: rotate(90deg);
+    }
 
+    /* Messages */
     .chat-messages {
+      position: relative;
+      z-index: 1;
       flex: 1;
       overflow-y: auto;
-      padding: 16px;
+      padding: 18px 16px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
+      perspective: 900px;
+      overflow-anchor: none; /* scrolling is managed in JS while replies stream */
       scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
+      scrollbar-color: rgba(var(--ov),.12) transparent;
+    }
+
+    .msg-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      transform-origin: bottom left;
+      animation: msgPop .5s cubic-bezier(.34,1.56,.64,1) both;
+    }
+
+    .msg-row.user {
+      justify-content: flex-end;
+      transform-origin: bottom right;
+    }
+
+    @keyframes msgPop {
+      from { opacity: 0; transform: translateY(16px) rotateX(-40deg) scale(.9); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .msg-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 1.5px rgba(0,229,255,.55), 0 4px 10px rgba(var(--shadow),.45);
     }
 
     .msg {
-      max-width: 82%;
-      padding: 10px 14px;
-      border-radius: 12px;
+      max-width: 80%;
+      padding: 11px 15px;
+      border-radius: 18px;
       font-size: 13.5px;
-      line-height: 1.5;
-      animation: msgIn .25s ease;
-    }
-
-    @keyframes msgIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
+      line-height: 1.6;
+      overflow-wrap: anywhere;
     }
 
     .msg.bot {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-bottom-left-radius: 4px;
-      align-self: flex-start;
+      color: var(--text);
+      background: linear-gradient(160deg, rgba(var(--ov),.09), rgba(var(--ov),.03));
+      border: 1px solid rgba(var(--ov),.08);
+      border-bottom-left-radius: 6px;
+      box-shadow:
+        inset 0 1px 0 rgba(var(--ov),.08),
+        0 10px 24px -10px rgba(var(--shadow),.7);
     }
 
     .msg.user {
-      background: linear-gradient(135deg, rgba(0,229,255,0.2), rgba(168,85,247,0.15));
-      border: 1px solid rgba(0,229,255,0.2);
-      border-bottom-right-radius: 4px;
-      align-self: flex-end;
+      white-space: pre-wrap;
+      color: #fff;
+      background: linear-gradient(135deg, #0e7490, #6d28d9);
+      border-bottom-right-radius: 6px;
+      box-shadow:
+        inset 0 1px 0 rgba(var(--ov),.28),
+        inset 0 -3px 8px rgba(var(--shadow),.22),
+        0 12px 24px -10px rgba(109,40,217,.7);
+    }
+
+    /* Formatted bot replies */
+    .msg.bot p { margin: 0 0 8px; }
+    .msg.bot p:last-child,
+    .msg.bot ul:last-child,
+    .msg.bot ol:last-child { margin-bottom: 0; }
+    .msg.bot strong { color: var(--text-strong); font-weight: 600; }
+    .msg.bot a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+
+    /* Bullet points as mini cards */
+    .msg.bot .rich-list {
+      list-style: none;
+      margin: 8px 0 10px;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      counter-reset: rich;
+    }
+
+    .msg.bot .rich-list li {
+      position: relative;
+      margin: 0;
+      padding: 8px 10px 8px 12px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(var(--ov),.05), rgba(var(--ov),.015));
+      border: 1px solid rgba(var(--ov),.06);
+      border-left: 2px solid var(--accent);
+      box-shadow: 0 4px 12px -8px rgba(var(--shadow),.8);
+      transition: transform .2s, background .2s, border-color .2s;
+    }
+
+    .msg.bot .rich-list li:nth-child(even) { border-left-color: var(--accent2); }
+
+    .msg.bot .rich-list li:hover {
+      transform: translateX(3px);
+      background: linear-gradient(135deg, rgba(0,229,255,.09), rgba(168,85,247,.04));
+      border-color: rgba(0,229,255,.25);
+    }
+
+    .msg.bot .rich-label {
+      display: block;
+      margin-bottom: 1px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .msg.bot .rich-list li:nth-child(even) .rich-label { color: #c4a1ff; }
+
+    /* Numbered steps get gradient badges */
+    .msg.bot .rich-list.numbered li {
+      padding-left: 40px;
+      border-left-width: 1px;
+      border-left-color: rgba(var(--ov),.06);
+      counter-increment: rich;
+    }
+
+    .msg.bot .rich-list.numbered li::before {
+      content: counter(rich);
+      position: absolute;
+      left: 10px;
+      top: 9px;
+      width: 20px;
+      height: 20px;
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+      font: 700 11px var(--mono);
+      color: var(--on-accent);
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 3px 8px -2px rgba(0,229,255,.5);
+    }
+
+    /* Email links as pills */
+    .msg.bot a.msg-mail {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 1px 8px;
+      border-radius: 999px;
+      text-decoration: none;
+      background: rgba(0,229,255,.1);
+      border: 1px solid rgba(0,229,255,.28);
+      transition: background .2s;
+    }
+
+    .msg.bot a.msg-mail:hover { background: rgba(0,229,255,.2); }
+
+    /* Streaming cursor */
+    .stream-caret {
+      display: inline-block;
+      width: 7px;
+      height: 14px;
+      margin-left: 2px;
+      vertical-align: -2px;
+      border-radius: 2px;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      animation: caretBlink .8s steps(2) infinite;
+    }
+
+    @keyframes caretBlink { 50% { opacity: 0; } }
+
+    /* Copy button under bot replies */
+    .msg-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: -8px;
+      padding-left: 34px;
+      animation: msgPop .4s cubic-bezier(.34,1.56,.64,1) both;
+    }
+
+    .msg-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: none;
+      color: var(--muted);
+      font: 500 11px var(--sans);
+      cursor: pointer;
+      transition: color .2s, background .2s, border-color .2s;
+    }
+
+    .msg-action:hover {
+      color: var(--text);
+      background: rgba(var(--ov),.05);
+      border-color: rgba(var(--ov),.08);
+    }
+
+    .msg-action svg { width: 13px; height: 13px; fill: currentColor; }
+    .msg-action.done { color: #4ade80; }
+    .msg.bot code {
+      font-family: var(--mono);
+      font-size: 12px;
+      background: rgba(var(--ov),.07);
+      border-radius: 4px;
+      padding: 1px 5px;
+    }
+
+    /* Typing indicator */
+    .msg.typing {
+      display: flex;
+      gap: 5px;
+      padding: 14px 16px;
     }
 
     .msg.typing span {
-      display: inline-block;
-      width: 6px; height: 6px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      background: var(--muted);
-      animation: dot .9s infinite;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 8px rgba(0,229,255,.5);
+      animation: dot 1s infinite ease-in-out;
     }
 
-    .msg.typing span:nth-child(2) { animation-delay: .2s; }
-    .msg.typing span:nth-child(3) { animation-delay: .4s; }
+    .msg.typing span:nth-child(2) { animation-delay: .15s; }
+    .msg.typing span:nth-child(3) { animation-delay: .3s; }
 
     @keyframes dot {
-      0%, 60%, 100% { transform: translateY(0); opacity: .4; }
-      30% { transform: translateY(-5px); opacity: 1; }
+      0%, 60%, 100% { transform: translateY(0) scale(.85); opacity: .45; }
+      30%           { transform: translateY(-6px) scale(1); opacity: 1; }
     }
 
-    .chat-input-row {
+    /* Quick-question chips */
+    .chat-suggestions {
       display: flex;
+      flex-wrap: wrap;
       gap: 8px;
-      padding: 12px 16px;
-      border-top: 1px solid var(--border);
+      padding-left: 34px;
+    }
+
+    .chat-suggestion {
+      background: linear-gradient(180deg, rgba(0,229,255,.13), rgba(0,229,255,.04));
+      border: 1px solid rgba(0,229,255,.32);
+      color: var(--accent);
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 7px 13px;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 3px 0 rgba(0,229,255,.2), 0 8px 16px -8px rgba(var(--shadow),.7);
+      transition: transform .15s, box-shadow .15s, background .2s, border-color .2s;
+      animation: msgPop .5s cubic-bezier(.34,1.56,.64,1) both;
+    }
+
+    .chat-suggestion:nth-child(1) { animation-delay: .1s; }
+    .chat-suggestion:nth-child(2) { animation-delay: .18s; }
+    .chat-suggestion:nth-child(3) { animation-delay: .26s; }
+    .chat-suggestion:nth-child(4) { animation-delay: .34s; }
+
+    .chat-suggestion:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(180deg, rgba(0,229,255,.22), rgba(0,229,255,.08));
+      border-color: var(--accent);
+      box-shadow: 0 5px 0 rgba(0,229,255,.25), 0 12px 20px -8px rgba(0,229,255,.35);
+    }
+
+    .chat-suggestion:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 rgba(0,229,255,.25), 0 4px 10px -6px rgba(var(--shadow),.7);
+    }
+
+    /* Input */
+    .chat-input-row {
+      position: relative;
+      z-index: 1;
+      padding: 12px 14px 6px;
       flex-shrink: 0;
+    }
+
+    .chat-input-wrap {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      padding: 6px 6px 6px 14px;
+      border-radius: 16px;
+      background: rgba(var(--ov),.05);
+      border: 1px solid rgba(var(--ov),.1);
+      box-shadow: inset 0 2px 8px rgba(var(--shadow),.4);
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .chat-input-wrap:focus-within {
+      border-color: rgba(0,229,255,.5);
+      box-shadow: inset 0 2px 8px rgba(var(--shadow),.4), 0 0 0 4px rgba(0,229,255,.12);
     }
 
     .chat-input {
       flex: 1;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      background: transparent;
+      border: none;
+      outline: none;
       color: var(--text);
       font-family: var(--sans);
       font-size: 13.5px;
-      padding: 9px 14px;
+      line-height: 1.45;
+      padding: 8px 0;
       resize: none;
-      outline: none;
-      transition: border-color .2s;
     }
 
-    .chat-input:focus { border-color: rgba(0,229,255,0.4); }
+    .chat-input::placeholder { color: var(--muted); }
 
     .chat-send {
       width: 38px;
       height: 38px;
-      border-radius: 8px;
-      background: var(--accent);
+      border-radius: 12px;
       border: none;
       cursor: pointer;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      background: linear-gradient(145deg, var(--accent), var(--accent2));
+      box-shadow:
+        inset 0 1px 0 rgba(var(--ov),.45),
+        inset 0 -3px 6px rgba(var(--shadow),.25),
+        0 6px 16px -4px rgba(0,229,255,.55);
+      transition: transform .15s, filter .2s, opacity .2s;
+    }
+
+    .chat-send:hover { transform: translateY(-1px) scale(1.06); filter: brightness(1.12); }
+    .chat-send:active { transform: scale(.92); }
+    .chat-send:disabled { opacity: .45; cursor: not-allowed; transform: none; filter: none; }
+    .chat-send svg { width: 16px; height: 16px; fill: #fff; }
+
+    .chat-footnote {
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+      text-align: center;
+      font-size: 10.5px;
+      color: var(--muted);
+      padding: 0 14px 10px;
+    }
+
+    /* Welcome pop-up — a mini chat preview pointing at the launcher */
+    .chat-notification {
+      position: fixed;
+      bottom: 106px;
+      right: 28px;
+      z-index: 199;
+      width: 290px;
+      padding: 14px;
+      border-radius: 18px;
+      background: linear-gradient(160deg, rgba(var(--panel),.94), rgba(var(--deep),.96));
+      -webkit-backdrop-filter: blur(16px);
+              backdrop-filter: blur(16px);
+      border: 1px solid rgba(0,229,255,.28);
+      box-shadow:
+        inset 0 1px 0 rgba(var(--ov),.07),
+        0 24px 50px -16px rgba(var(--shadow),.85),
+        0 0 30px -10px rgba(0,229,255,.45);
+      transform-origin: bottom right;
+      animation: notifIn .6s cubic-bezier(.34,1.56,.64,1) both;
+      cursor: pointer;
+    }
+
+    /* Little tail pointing down at the chat button */
+    .chat-notification::after {
+      content: '';
+      position: absolute;
+      right: 24px;
+      bottom: -7px;
+      width: 14px;
+      height: 14px;
+      transform: rotate(45deg);
+      background: rgba(var(--surface),.98);
+      border-right: 1px solid rgba(0,229,255,.28);
+      border-bottom: 1px solid rgba(0,229,255,.28);
+    }
+
+    .chat-notification.leaving { animation: notifOut .35s ease-in forwards; }
+
+    @keyframes notifIn {
+      from { opacity: 0; transform: perspective(600px) translateY(20px) rotateX(-25deg) scale(.85); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    @keyframes notifOut {
+      to { opacity: 0; transform: perspective(600px) translateY(14px) rotateX(-20deg) scale(.9); }
+    }
+
+    .notif-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .notif-avatar {
+      position: relative;
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+    }
+
+    .notif-avatar img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 0 2px rgba(0,229,255,.5), 0 0 14px rgba(0,229,255,.4);
+    }
+
+    .notif-avatar::after {
+      content: '';
+      position: absolute;
+      right: -1px;
+      bottom: -1px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #22c55e;
+      border: 2px solid var(--bg2);
+      animation: statusPulse 2s ease-out infinite;
+    }
+
+    .notif-title { flex: 1; min-width: 0; line-height: 1.3; }
+    .notif-title strong { display: block; font-size: 13px; color: var(--text); }
+    .notif-title span { font-size: 11px; color: #4ade80; }
+
+    .notif-close {
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      border: none;
+      background: rgba(var(--ov),.05);
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      transition: color .2s, background .2s, transform .25s;
+    }
+
+    .notif-close:hover { color: var(--text); background: rgba(var(--ov),.1); transform: rotate(90deg); }
+
+    .notif-bubble {
+      min-height: 40px;
+      padding: 10px 13px;
+      border-radius: 14px;
+      border-top-left-radius: 5px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text);
+      background: linear-gradient(160deg, rgba(var(--ov),.08), rgba(var(--ov),.03));
+      border: 1px solid rgba(var(--ov),.08);
+    }
+
+    .notif-bubble .typing-dots { display: inline-flex; gap: 4px; padding: 6px 0; }
+
+    .notif-bubble .typing-dots i {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      animation: dot 1s infinite ease-in-out;
+    }
+
+    .notif-bubble .typing-dots i:nth-child(2) { animation-delay: .15s; }
+    .notif-bubble .typing-dots i:nth-child(3) { animation-delay: .3s; }
+
+    .notif-text { animation: msgPop .4s ease both; display: block; }
+
+    .notif-cta {
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 6px;
+      width: 100%;
+      margin-top: 10px;
+      padding: 9px 12px;
+      border: none;
+      border-radius: 11px;
+      font: 600 12.5px var(--sans);
+      color: var(--on-accent);
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent), #7c8cff 60%, var(--accent2));
+      box-shadow: inset 0 1px 0 rgba(var(--ov),.4), 0 8px 20px -8px rgba(0,229,255,.6);
+      transition: transform .2s, filter .2s;
+    }
+
+    .notif-cta:hover { transform: translateY(-1px); filter: brightness(1.1); }
+
+    /* Countdown until the pop-up hides itself (pauses on hover) */
+    .notif-timer {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 5px;
+      height: 2px;
+      border-radius: 2px;
+      overflow: hidden;
+      background: rgba(var(--ov),.06);
+    }
+
+    .notif-timer span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transform-origin: left;
+      animation: notifTimer 9s linear forwards;
+    }
+
+    .chat-notification:hover .notif-timer span { animation-play-state: paused; }
+
+    @keyframes notifTimer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+    /* Unread badge on the launcher while the pop-up is showing */
+    .chat-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      z-index: 2;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 5px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      font: 700 11px var(--sans);
+      color: #fff;
+      background: #ef4444;
+      border: 2px solid var(--bg);
+      box-shadow: 0 0 12px rgba(239,68,68,.7);
+      animation: notifIn .5s cubic-bezier(.34,1.56,.64,1) both;
+      pointer-events: none;
+    }
+
+    /* ── COMMAND PALETTE (Ctrl/⌘ + K) ────────── */
+    .cmdk-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 12vh 16px 16px;
+      background: rgba(var(--scrim),.6);
+      -webkit-backdrop-filter: blur(8px);
+              backdrop-filter: blur(8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+    }
+
+    .cmdk-overlay.open { opacity: 1; pointer-events: all; }
+
+    .cmdk {
+      width: min(620px, 100%);
+      max-height: 70vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-radius: 20px;
+      background: linear-gradient(160deg, rgba(var(--panel),.96), rgba(var(--deep),.98));
+      border: 1px solid rgba(0,229,255,.25);
+      box-shadow:
+        inset 0 1px 0 rgba(var(--ov),.07),
+        0 40px 80px -20px rgba(var(--shadow),.9),
+        0 0 60px -20px rgba(0,229,255,.4);
+      transform: perspective(1000px) translateY(-14px) rotateX(10deg) scale(.96);
+      transition: transform .3s cubic-bezier(.22,1.2,.36,1);
+    }
+
+    .cmdk-overlay.open .cmdk { transform: none; }
+
+    .cmdk-search {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(var(--ov),.07);
+    }
+
+    .cmdk-search svg { width: 18px; height: 18px; fill: var(--accent); flex-shrink: 0; }
+
+    .cmdk-input {
+      flex: 1;
+      min-width: 0;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font: 400 16px var(--sans);
+    }
+
+    .cmdk-input::placeholder { color: var(--muted); }
+
+    .cmdk kbd {
+      font: 600 10.5px var(--mono);
+      padding: 3px 7px;
+      border-radius: 6px;
+      color: var(--muted);
+      background: rgba(var(--ov),.06);
+      border: 1px solid rgba(var(--ov),.1);
+    }
+
+    .cmdk-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(var(--ov),.12) transparent;
+    }
+
+    .cmdk-group {
+      padding: 10px 12px 6px;
+      font: 600 10.5px var(--mono);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .cmdk-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: none;
+      color: var(--text-1);
+      font: 500 14px var(--sans);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .cmdk-item.active {
+      color: var(--text-strong);
+      background: linear-gradient(90deg, rgba(0,229,255,.12), rgba(168,85,247,.06));
+      border-color: rgba(0,229,255,.25);
+    }
+
+    .cmdk-icon {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
       flex-shrink: 0;
+      border-radius: 9px;
+      font-size: 15px;
+      background: rgba(var(--ov),.05);
+      border: 1px solid rgba(var(--ov),.08);
+    }
+
+    .cmdk-item.active .cmdk-icon {
+      background: linear-gradient(145deg, rgba(0,229,255,.2), rgba(168,85,247,.15));
+      border-color: rgba(0,229,255,.3);
+    }
+
+    .cmdk-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cmdk-hint { font: 500 11px var(--mono); color: var(--muted); }
+    .cmdk-item.active .cmdk-hint { color: var(--accent); }
+
+    .cmdk-empty { padding: 28px; text-align: center; color: var(--muted); font-size: 14px; }
+
+    /* Results list + live preview of the highlighted result */
+    .cmdk { width: min(920px, 100%); }
+
+    .cmdk-body {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+    }
+
+    .cmdk-body .cmdk-list { min-height: 0; max-height: calc(70vh - 110px); }
+
+    .cmdk-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+
+    .cmdk-snippet {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .cmdk-page {
+      flex-shrink: 0;
+      font: 600 10px var(--mono);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(var(--ov),.05);
+      border: 1px solid rgba(var(--ov),.08);
+    }
+
+    .cmdk-item.active .cmdk-page { color: var(--accent); border-color: rgba(0,229,255,.3); background: rgba(0,229,255,.08); }
+
+    .cmdk mark,
+    .cmdk-preview mark {
+      color: var(--text-strong);
+      background: linear-gradient(90deg, rgba(0,229,255,.35), rgba(168,85,247,.35));
+      border-radius: 3px;
+      padding: 0 2px;
+    }
+
+    .cmdk-suggest {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px 4px;
+    }
+
+    .cmdk-suggest-label { font: 600 10.5px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+
+    .cmdk-chip {
+      padding: 5px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,229,255,.3);
+      background: rgba(0,229,255,.06);
+      color: var(--accent);
+      font: 500 12px var(--sans);
+      cursor: pointer;
       transition: background .2s, transform .2s;
     }
 
-    .chat-send:hover { background: #33edff; transform: scale(1.05); }
-    .chat-send svg { width: 16px; height: 16px; fill: var(--bg); }
+    .cmdk-chip:hover { background: rgba(0,229,255,.15); transform: translateY(-1px); }
+
+    .cmdk-loading {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .cmdk-loading span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      animation: dot 1s infinite ease-in-out;
+    }
+
+    .cmdk-loading span:nth-child(2) { animation-delay: .15s; }
+    .cmdk-loading span:nth-child(3) { animation-delay: .3s; margin-right: 6px; }
+
+    .cmdk-preview {
+      position: relative;
+      overflow-y: auto;
+      max-height: calc(70vh - 110px);
+      padding: 22px;
+      border-left: 1px solid rgba(var(--ov),.07);
+      background: radial-gradient(400px circle at 100% 0%, rgba(0,229,255,.08), transparent 60%), rgba(var(--ov),.015);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(var(--ov),.12) transparent;
+    }
+
+    .cmdk-preview:empty { display: none; }
+
+    .pv-icon {
+      width: 56px;
+      height: 56px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 14px;
+      border-radius: 16px;
+      font-size: 26px;
+      background: linear-gradient(145deg, rgba(0,229,255,.18), rgba(168,85,247,.14));
+      border: 1px solid rgba(0,229,255,.3);
+      box-shadow: inset 0 1px 0 rgba(var(--ov),.15), 0 14px 28px -12px rgba(0,229,255,.5);
+      animation: pvIn .35s cubic-bezier(.34,1.56,.64,1) both;
+    }
+
+    @keyframes pvIn { from { opacity: 0; transform: translateY(8px) scale(.9) rotate(-6deg); } }
+
+    .pv-type { font: 600 10.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+    .pv-title { font-size: 19px; font-weight: 700; line-height: 1.3; color: var(--text-strong); margin-bottom: 4px; }
+    .pv-sub { font-size: 13px; color: var(--text-2); margin-bottom: 12px; }
+    .pv-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .pv-text { font-size: 13.5px; line-height: 1.7; color: var(--text-3); margin-bottom: 18px; }
+
+    .pv-actions { display: flex; flex-direction: column; gap: 8px; }
+
+    .pv-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 11px;
+      border: 1px solid rgba(var(--ov),.1);
+      background: rgba(var(--ov),.05);
+      color: var(--text);
+      font: 600 12.5px var(--sans);
+      cursor: pointer;
+      transition: background .2s, border-color .2s, transform .2s;
+    }
+
+    .pv-btn:hover { transform: translateY(-1px); border-color: rgba(0,229,255,.35); background: rgba(0,229,255,.08); }
+
+    .pv-btn.primary {
+      color: var(--on-accent);
+      border: none;
+      background: linear-gradient(135deg, var(--accent), #7c8cff 60%, var(--accent2));
+      box-shadow: inset 0 1px 0 rgba(var(--ov),.4), 0 8px 20px -8px rgba(0,229,255,.6);
+    }
+
+    .pv-btn kbd { background: rgba(var(--shadow),.15); border-color: rgba(var(--shadow),.15); color: inherit; }
+
+    @media (max-width: 860px) {
+      .cmdk-body { grid-template-columns: minmax(0, 1fr); }
+      .cmdk-preview { display: none; }
+    }
+
+    /* ── 3D PROJECT POP-UP ───────────────────── */
+    .project-card { cursor: pointer; }
+    .project-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+    /* "Details ↗" hint that slides in on hover */
+    .project-more {
+      position: absolute;
+      top: 22px;
+      right: 22px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font: 600 11px var(--mono);
+      color: var(--accent);
+      background: rgba(0,229,255,.08);
+      border: 1px solid rgba(0,229,255,.25);
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity .25s, transform .25s;
+      pointer-events: none;
+    }
+
+    .project-card:hover .project-more,
+    .project-card:focus-visible .project-more { opacity: 1; transform: translateZ(30px); }
+
+    .project-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 320;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      background: rgba(var(--scrim),.65);
+      -webkit-backdrop-filter: blur(10px);
+              backdrop-filter: blur(10px);
+      perspective: 1400px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s;
+    }
+
+    .project-modal.open { opacity: 1; pointer-events: all; }
+    .project-modal.closing { opacity: 0; transition-duration: .38s; }
+
+    .pm-card {
+      position: relative;
+      width: min(780px, 100%);
+      max-height: 86vh;
+      overflow-y: auto;
+      border-radius: 26px;
+      background: linear-gradient(160deg, rgba(var(--panel),.97), rgba(var(--deep),.98));
+      border: 1px solid rgba(0,229,255,.25);
+      box-shadow:
+        inset 0 1px 0 rgba(var(--ov),.08),
+        0 50px 100px -30px rgba(var(--shadow),.9),
+        0 0 80px -30px rgba(0,229,255,.45);
+      transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+      transform-style: preserve-3d;
+      transition: transform .2s ease-out;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(var(--ov),.15) transparent;
+    }
+
+    .pm-card .tilt-glare { opacity: 1; z-index: 2; border-radius: inherit; }
+
+    .pm-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      z-index: 3;
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      border: 1px solid rgba(var(--ov),.12);
+      background: rgba(var(--ov),.06);
+      color: var(--text-2);
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform .25s, color .2s, background .2s;
+    }
+
+    .pm-close:hover { transform: rotate(90deg); color: var(--text); background: rgba(var(--ov),.12); }
+
+    .pm-hero {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      padding: 40px 40px 30px;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(var(--ov),.07);
+      background:
+        radial-gradient(420px circle at 12% 0%, rgba(0,229,255,.18), transparent 60%),
+        radial-gradient(380px circle at 100% 100%, rgba(168,85,247,.16), transparent 60%);
+    }
+
+    /* Slowly rotating grid for depth behind the header */
+    .pm-hero::before {
+      content: '';
+      position: absolute;
+      inset: -50%;
+      background-image:
+        linear-gradient(rgba(var(--ov),.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(var(--ov),.05) 1px, transparent 1px);
+      background-size: 32px 32px;
+      transform: perspective(500px) rotateX(60deg) translateY(10%);
+      -webkit-mask-image: radial-gradient(circle at 50% 30%, #000, transparent 60%);
+              mask-image: radial-gradient(circle at 50% 30%, #000, transparent 60%);
+      animation: pmGrid 14s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes pmGrid { to { background-position: 0 320px; } }
+
+    .pm-icon {
+      position: relative;
+      flex-shrink: 0;
+      width: 96px;
+      height: 96px;
+      display: grid;
+      place-items: center;
+      border-radius: 26px;
+      font-size: 46px;
+      background: linear-gradient(145deg, rgba(0,229,255,.22), rgba(168,85,247,.18));
+      border: 1px solid rgba(0,229,255,.35);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 24px 40px -14px rgba(0,229,255,.55);
+      transform: translateZ(60px);
+      animation: pmFloat 4s ease-in-out infinite;
+    }
+
+    @keyframes pmFloat {
+      0%, 100% { translate: 0 0; rotate: -3deg; }
+      50%      { translate: 0 -8px; rotate: 3deg; }
+    }
+
+    .pm-head { position: relative; min-width: 0; transform: translateZ(30px); }
+    .pm-kicker { font: 600 11px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+
+    .pm-head h2 {
+      font-size: clamp(24px, 3.6vw, 34px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -.01em;
+      margin-bottom: 14px;
+      color: var(--text-strong);
+    }
+
+    .pm-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .pm-body { padding: 28px 40px 8px; }
+    .pm-desc { font-size: 16px; line-height: 1.8; color: var(--text-1); margin-bottom: 26px; }
+
+    .pm-related h3 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font: 600 12px var(--mono);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .pm-related h3::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(0,229,255,.4), transparent); }
+    .pm-related[hidden] { display: none; }
+    .pm-related-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .pm-rel {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(var(--ov),.07);
+      background: rgba(var(--ov),.03);
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      animation: pmRelIn .5s cubic-bezier(.22,1.2,.36,1) both;
+      animation-delay: var(--d, 0ms);
+      transition: border-color .2s, background .2s, transform .2s;
+    }
+
+    .pm-rel:hover { transform: translateX(4px); border-color: rgba(0,229,255,.3); background: rgba(0,229,255,.05); }
+
+    @keyframes pmRelIn { from { opacity: 0; transform: perspective(600px) translateY(12px) rotateX(-20deg); } }
+
+    .pm-rel-icon {
+      flex-shrink: 0;
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      font-size: 18px;
+      background: rgba(var(--ov),.05);
+      border: 1px solid rgba(var(--ov),.08);
+    }
+
+    .pm-rel-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+    .pm-rel-type { font: 600 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .pm-rel-title { font-size: 14.5px; font-weight: 600; color: var(--text); }
+    .pm-rel-title em { font-style: normal; font-weight: 400; color: var(--text-2); font-size: 13px; }
+
+    .pm-rel-text {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-2);
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+              line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .pm-rel-go { flex-shrink: 0; align-self: center; font: 600 12px var(--mono); color: var(--accent); }
+
+    .pm-loading { display: flex; gap: 6px; padding: 12px 4px; }
+
+    .pm-loading span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      animation: dot 1s infinite ease-in-out;
+    }
+
+    .pm-loading span:nth-child(2) { animation-delay: .15s; }
+    .pm-loading span:nth-child(3) { animation-delay: .3s; }
+
+    .pm-actions { display: flex; flex-wrap: wrap; gap: 12px; padding: 22px 40px 34px; }
+
+    @media (max-width: 640px) {
+      .pm-hero { flex-direction: column; align-items: flex-start; gap: 18px; padding: 32px 22px 24px; }
+      .pm-icon { width: 76px; height: 76px; font-size: 36px; border-radius: 20px; }
+      .pm-body { padding: 22px 22px 4px; }
+      .pm-actions { padding: 18px 22px 26px; }
+      .pm-rel-go { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .pm-icon, .pm-hero::before, .pm-rel { animation: none; }
+    }
+
+    /* Item a search result points to: lands below the navbar and glows briefly */
+    .search-target { scroll-margin-top: 110px; }
+
+    .search-hit { animation: searchHit 2.6s ease-out; }
+
+    @keyframes searchHit {
+      0%, 35% { box-shadow: 0 0 0 2px var(--accent), 0 0 0 8px rgba(0,229,255,.15), 0 0 50px rgba(0,229,255,.45); }
+      100%    { box-shadow: 0 0 0 2px rgba(0,229,255,0), 0 0 0 8px rgba(0,229,255,0), 0 0 50px rgba(0,229,255,0); }
+    }
+
+    .cmdk-footer {
+      display: flex;
+      gap: 16px;
+      padding: 10px 18px;
+      border-top: 1px solid rgba(var(--ov),.07);
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+
+    .cmdk-footer span { display: inline-flex; align-items: center; gap: 6px; }
+
+    @media (max-width: 600px) {
+      .cmdk-overlay { padding-top: 76px; }
+      .cmdk-footer { display: none; }
+    }
+
+    /* ── TOAST ───────────────────────────────── */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 32px;
+      z-index: 400;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 18px;
+      border-radius: 14px;
+      font-size: 13.5px;
+      color: var(--text);
+      background: rgba(var(--band),.95);
+      border: 1px solid rgba(74,222,128,.35);
+      box-shadow: 0 20px 40px -14px rgba(var(--shadow),.85), 0 0 24px -10px rgba(74,222,128,.5);
+      translate: -50% 0;
+      animation: toastIn .45s cubic-bezier(.34,1.56,.64,1) both;
+    }
+
+    .toast.leaving { animation: toastOut .3s ease-in forwards; }
+
+    @keyframes toastIn  { from { opacity: 0; transform: translateY(20px) scale(.9); } to { opacity: 1; transform: none; } }
+    @keyframes toastOut { to { opacity: 0; transform: translateY(12px) scale(.95); } }
+
+    /* ── BACK TO TOP (with scroll progress ring) ─ */
+    .to-top {
+      position: fixed;
+      right: 37px;
+      bottom: 104px;
+      z-index: 150;
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      color: var(--accent);
+      background: rgba(var(--band),.85);
+      -webkit-backdrop-filter: blur(10px);
+              backdrop-filter: blur(10px);
+      box-shadow: 0 10px 24px -10px rgba(var(--shadow),.8);
+      opacity: 0;
+      translate: 0 12px;
+      pointer-events: none;
+      transition: opacity .3s, translate .3s, box-shadow .3s;
+    }
+
+    .to-top.show { opacity: 1; translate: 0 0; pointer-events: all; }
+    .to-top:hover { box-shadow: 0 10px 24px -10px rgba(var(--shadow),.8), 0 0 20px -4px rgba(0,229,255,.6); }
+
+    /* Hidden while the chat or its pop-up occupy that corner */
+    body.chat-open .to-top,
+    body.has-notif .to-top { opacity: 0; pointer-events: none; }
+
+    .to-top svg.ring { position: absolute; inset: 0; transform: rotate(-90deg); }
+    .to-top .ring-track { fill: none; stroke: rgba(var(--ov),.08); stroke-width: 2.5; }
+    .to-top .ring-fill  { fill: none; stroke: url(#ringGrad); stroke-width: 2.5; stroke-linecap: round; }
+    .to-top .arrow { width: 16px; height: 16px; fill: currentColor; position: relative; }
+
+    @media (max-width: 768px) { .to-top { right: 27px; bottom: 94px; } }
+
+    /* ── PAGE TRANSITIONS (supported browsers) ── */
+    @view-transition { navigation: auto; }
+
+    ::view-transition-old(root) { animation: vtOut .25s ease both; }
+    ::view-transition-new(root) { animation: vtIn .35s cubic-bezier(.2,.8,.2,1) both; }
+
+    @keyframes vtOut { to { opacity: 0; transform: translateY(-10px); } }
+    @keyframes vtIn  { from { opacity: 0; transform: translateY(14px); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+      .chat-notification, .chat-badge, .cmdk { animation: none; transition: none; }
+    }
+
+    @media (max-width: 768px) {
+      .chat-bubble-btn { right: 18px; bottom: 20px; }
+      .chat-window {
+        right: 12px;
+        bottom: 96px;
+        width: calc(100vw - 24px);
+        height: min(600px, calc(100vh - 116px));
+        height: min(600px, calc(100dvh - 116px));
+        max-height: none;
+      }
+      .chat-notification { right: 18px; bottom: 96px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .chat-bubble-btn,
+      .chat-bubble-btn::before,
+      .chat-bubble-btn::after,
+      .chat-avatar::before,
+      .chat-avatar::after,
+      .chat-aurora::before,
+      .chat-aurora::after,
+      .chat-window::before { animation: none; }
+      .msg-row,
+      .chat-suggestion,
+      .chat-notification { animation-duration: .01s; }
+      .chat-window { transition: opacity .2s; }
+    }
 
     /* ── ANIMATIONS ──────────────────────────── */
+    /* Uses the individual translate/scale properties so it composes with the 3D tilt transform */
     .fade-up {
       opacity: 0;
-      transform: translateY(30px);
-      transition: opacity .7s ease, transform .7s ease;
+      translate: 0 40px;
+      scale: .96;
+      filter: blur(4px);
+      transition: opacity .8s ease, translate .8s cubic-bezier(.2,.8,.2,1), scale .8s cubic-bezier(.2,.8,.2,1), filter .8s ease;
     }
 
     .fade-up.visible {
       opacity: 1;
-      transform: translateY(0);
+      translate: 0 0;
+      scale: 1;
+      filter: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fade-up { translate: none; scale: none; filter: none; transition: opacity .4s; }
     }
 
     /* ── RESPONSIVE ──────────────────────────── */
@@ -450,7 +2138,6 @@
       .hamburger { display: flex; }
       section { padding: 64px 0; }
       .container { padding: 0 20px; }
-      .chat-window { width: calc(100vw - 40px); right: 20px; }
     }
 
     /* ── MOBILE NAV MENU ─────────────────────── */
@@ -459,7 +2146,7 @@
       position: fixed;
       inset: 0;
       z-index: 90;
-      background: rgba(7,11,18,0.98);
+      background: rgba(var(--deep),0.98);
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -478,10 +2165,11 @@
 
 <!-- ── THREE.JS CANVAS ── -->
 <canvas id="bg-canvas"></canvas>
+<div id="scroll-progress" aria-hidden="true"></div>
 
 <!-- ── NAVIGATION ── -->
 <nav id="navbar">
-  <a href="/" class="nav-logo" id="nav-logo"></a>
+  <a href="/" class="nav-logo" id="nav-logo" aria-label="Saim Ahmad — home"></a>
 
   <ul class="nav-links">
     <li><a href="/#about">About</a></li>
@@ -493,10 +2181,21 @@
     <li><a href="/#contact">Contact</a></li>
   </ul>
 
-  <a href="/#contact" class="nav-cta">Hire Me</a>
-  <button class="hamburger" id="hamburger" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
+  <div class="nav-actions">
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to light mode">
+      <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-5 1.2 3h-2.4L12 2zm0 20-1.2-3h2.4L12 22zM2 12l3-1.2v2.4L2 12zm20 0-3 1.2v-2.4L22 12zM4.9 4.9l3 1.3-1.7 1.7-1.3-3zm14.2 14.2-3-1.3 1.7-1.7 1.3 3zM4.9 19.1l1.3-3 1.7 1.7-3 1.3zM19.1 4.9l-1.3 3-1.7-1.7 3-1.3z"/></svg>
+    </button>
+    <button class="nav-search" id="cmdk-open" type="button" aria-label="Search the site (Ctrl+K)">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 1 0 4.9 14.3l5.4 5.4 1.4-1.4-5.4-5.4A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/></svg>
+      <span>Search</span>
+      <kbd id="cmdk-kbd">Ctrl K</kbd>
+    </button>
+    <a href="/#contact" class="nav-cta">Hire Me</a>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
 </nav>
 
 <!-- Mobile menu -->
@@ -520,35 +2219,114 @@
 </footer>
 
 <!-- ── AI CHATBOT ── -->
-<button class="chat-bubble-btn" id="chat-toggle" aria-label="Chat with Saim's AI">
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<button class="chat-bubble-btn" id="chat-toggle" aria-label="Chat with Saim's AI" aria-expanded="false">
+  <svg class="icon-chat" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
     <path d="M20 2H4C2.897 2 2 2.897 2 4v18l4-4h14c1.103 0 2-.897 2-2V4c0-1.103-.897-2-2-2zm-2 11H6v-2h12v2zm0-4H6V7h12v2z"/>
+  </svg>
+  <svg class="icon-close" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12 5.7 16.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4z"/>
   </svg>
 </button>
 
 <div class="chat-window" id="chat-window" role="dialog" aria-label="Chat with Saim's AI assistant">
+  <div class="chat-aurora" aria-hidden="true"></div>
+
   <div class="chat-header">
     <div class="chat-avatar">
-      <img src="{% static 'portfolio/img/chatbot.jpg' %}" alt="AI" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />
+      <img src="{% static 'portfolio/img/chatbot.jpg' %}" alt="AI" />
     </div>
     <div class="chat-header-info">
-      <h4>Saim's AI Assitant</h4>
+      <h4>Saim's AI Assistant</h4>
       <p>● Online</p>
     </div>
     <button class="chat-close" id="chat-close" aria-label="Close chat">✕</button>
   </div>
 
-  <div class="chat-messages" id="chat-messages">
-    <div class="msg bot">
-      👋 Hi! I'm Saim's AI assistant. Ask me anything about his skills, projects, or experience — or just say hello!
+  <div class="chat-messages" id="chat-messages" aria-live="polite">
+    <div class="msg-row bot">
+      <img class="msg-avatar" src="{% static 'portfolio/img/chatbot.jpg' %}" alt="" />
+      <div class="msg bot">
+        👋 Hi! I'm Saim's AI assistant. Ask me anything about his skills, projects, or experience — or just say hello!
+      </div>
+    </div>
+    <div class="chat-suggestions" id="chat-suggestions">
+      <button class="chat-suggestion" type="button">What's Saim's tech stack?</button>
+      <button class="chat-suggestion" type="button">Tell me about his AI experience</button>
+      <button class="chat-suggestion" type="button">Is he open to new roles?</button>
+      <button class="chat-suggestion" type="button">How can I contact him?</button>
     </div>
   </div>
 
   <div class="chat-input-row">
-    <textarea class="chat-input" id="chat-input" placeholder="Ask me anything…" rows="1"></textarea>
-    <button class="chat-send" id="chat-send" aria-label="Send message">
-      <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-    </button>
+    <div class="chat-input-wrap">
+      <textarea class="chat-input" id="chat-input" placeholder="Ask me anything…" rows="1"></textarea>
+      <button class="chat-send" id="chat-send" aria-label="Send message">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+  <p class="chat-footnote">AI-generated answers · for anything important, email Saim</p>
+</div>
+
+<!-- ── BACK TO TOP ── -->
+<button class="to-top" id="to-top" type="button" aria-label="Back to top">
+  <svg class="ring" viewBox="0 0 44 44" aria-hidden="true">
+    <defs>
+      <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#00e5ff"/><stop offset="1" stop-color="#a855f7"/>
+      </linearGradient>
+    </defs>
+    <circle class="ring-track" cx="22" cy="22" r="20"/>
+    <circle class="ring-fill" id="to-top-ring" cx="22" cy="22" r="20"/>
+  </svg>
+  <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5l-7 7 1.4 1.4 4.6-4.6V20h2V8.8l4.6 4.6L19 12z"/></svg>
+</button>
+
+<!-- ── COMMAND PALETTE ── -->
+<div class="cmdk-overlay" id="cmdk" aria-hidden="true">
+  <div class="cmdk" role="dialog" aria-modal="true" aria-label="Search the site">
+    <div class="cmdk-search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 1 0 4.9 14.3l5.4 5.4 1.4-1.4-5.4-5.4A8 8 0 0 0 10 2zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12z"/></svg>
+      <input class="cmdk-input" id="cmdk-input" type="text" placeholder="Search projects, skills, experience, blog — or ask the AI…" autocomplete="off" spellcheck="false" aria-controls="cmdk-list" />
+      <kbd>Esc</kbd>
+    </div>
+    <div class="cmdk-body">
+      <div class="cmdk-list" id="cmdk-list" role="listbox"></div>
+      <div class="cmdk-preview" id="cmdk-preview" aria-live="polite"></div>
+    </div>
+    <div class="cmdk-footer">
+      <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+      <span><kbd>↵</kbd> open</span>
+      <span><kbd>⇧</kbd><kbd>↵</kbd> ask AI about it</span>
+      <span><kbd>Esc</kbd> close</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── 3D PROJECT POP-UP (filled by JS from the clicked card) ── -->
+<div class="project-modal" id="project-modal" aria-hidden="true">
+  <div class="pm-card" role="dialog" aria-modal="true" aria-labelledby="pm-title">
+    <span class="tilt-glare" aria-hidden="true"></span>
+    <button class="pm-close" type="button" aria-label="Close">✕</button>
+    <div class="pm-hero">
+      <div class="pm-icon" aria-hidden="true"></div>
+      <div class="pm-head">
+        <p class="pm-kicker">Project</p>
+        <h2 id="pm-title"></h2>
+        <div class="pm-tags"></div>
+      </div>
+    </div>
+    <div class="pm-body">
+      <p class="pm-desc"></p>
+      <div class="pm-related">
+        <h3>Where it appears</h3>
+        <div class="pm-related-list"></div>
+      </div>
+    </div>
+    <div class="pm-actions">
+      <button type="button" class="btn btn-primary" data-pm="ask">✨ Ask AI about this project</button>
+      <button type="button" class="btn btn-outline" data-pm="link">🔗 Copy link</button>
+    </div>
   </div>
 </div>
 
@@ -560,136 +2338,629 @@
 // THREE.JS PARTICLE NETWORK
 // ─────────────────────────────────────────────
 (function () {
+  // If the CDN fails, skip the background instead of breaking the rest of this script
+  if (typeof THREE === 'undefined') return;
+
   const canvas = document.getElementById('bg-canvas');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isSmall = window.innerWidth < 768;
+
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+  // Fog fades far particles and lines into the background for real depth
+  scene.fog = new THREE.Fog(0x070b12, 650, 1800);
+
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 2000);
   camera.position.z = 600;
 
-  // Particles
-  const PARTICLE_COUNT = 120;
-  const positions = [];
-  const velocities = [];
-  const geometry = new THREE.BufferGeometry();
-  const posArray = new Float32Array(PARTICLE_COUNT * 3);
+  // Everything lives in one group so it can turn in 3D as the page scrolls
+  const group = new THREE.Group();
+  scene.add(group);
+
+  // Visible area at z = 0, so particles fill the screen at any size
+  function viewBounds() {
+    const h = 2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    return { w: h * camera.aspect, h };
+  }
+  let bounds = viewBounds();
+
+  // Soft round glow sprite instead of square points
+  function makeGlowTexture() {
+    const c = document.createElement('canvas');
+    c.width = c.height = 64;
+    const ctx = c.getContext('2d');
+    const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.25, 'rgba(255,255,255,0.75)');
+    g.addColorStop(0.6, 'rgba(255,255,255,0.15)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 64, 64);
+    return new THREE.CanvasTexture(c);
+  }
+  const glowTex = makeGlowTexture();
+
+  // ── Theme colours (dark: additive glow on black; light: normal blending on a pale page) ──
+  const THEMES = {
+    dark:  { bg: 0x070b12, cyan: 0x00e5ff, purple: 0xa855f7, pulse: 0xe0fbff, dust: 0x6b7a99, fade: 0x000000, blend: THREE.AdditiveBlending,
+             globeOpacity: 0.3, bokehOpacity: 0.14 },
+    light: { bg: 0xf5f7fb, cyan: 0x0891b2, purple: 0x9333ea, pulse: 0x0e7490, dust: 0x94a3b8, fade: 0xf5f7fb, blend: THREE.NormalBlending,
+             globeOpacity: 0.24, bokehOpacity: 0.1 },
+  };
+  const CYAN = new THREE.Color(), PURPLE = new THREE.Color(), PULSE = new THREE.Color(), FADE = new THREE.Color();
+  const tmp = new THREE.Color();
+
+  // ── Particles ──────────────────────────────
+  const PARTICLE_COUNT = isSmall ? 80 : 170;
+  const particles = [];
+  const posArray   = new Float32Array(PARTICLE_COUNT * 3);
+  const colorArray = new Float32Array(PARTICLE_COUNT * 3);
 
   for (let i = 0; i < PARTICLE_COUNT; i++) {
-    const x = (Math.random() - 0.5) * window.innerWidth * 1.4;
-    const y = (Math.random() - 0.5) * window.innerHeight * 1.4;
-    const z = (Math.random() - 0.5) * 400;
-    positions.push({ x, y, z });
-    velocities.push({
-      x: (Math.random() - 0.5) * 0.3,
-      y: (Math.random() - 0.5) * 0.3,
-      z: 0,
+    const vx = (Math.random() - 0.5) * 0.28, vy = (Math.random() - 0.5) * 0.28;
+    particles.push({
+      x: (Math.random() - 0.5) * bounds.w * 1.3,
+      y: (Math.random() - 0.5) * bounds.h * 1.3,
+      z: (Math.random() - 0.5) * 900,
+      vx, vy, bvx: vx, bvy: vy,      // current + resting velocity (shockwaves push, then it settles)
+      mix: Math.random() < 0.7 ? Math.random() * 0.35 : 0.65 + Math.random() * 0.35,
+      color: new THREE.Color(),
+      phase: Math.random() * Math.PI * 2,
+      flash: 0,                      // brightens when a signal pulse arrives
     });
-    posArray[i * 3]     = x;
-    posArray[i * 3 + 1] = y;
-    posArray[i * 3 + 2] = z;
   }
 
-  geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-
-  const dotMat = new THREE.PointsMaterial({
-    color: 0x00e5ff,
-    size: 2.5,
-    transparent: true,
-    opacity: 0.7,
-    sizeAttenuation: true,
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3).setUsage(THREE.DynamicDrawUsage));
+  geometry.setAttribute('color',    new THREE.BufferAttribute(colorArray, 3).setUsage(THREE.DynamicDrawUsage));
+  const pointsMat = new THREE.PointsMaterial({
+    size: 13, map: glowTex, vertexColors: true, transparent: true, depthWrite: false, sizeAttenuation: true,
   });
+  group.add(new THREE.Points(geometry, pointsMat));
 
-  const points = new THREE.Points(geometry, dotMat);
-  scene.add(points);
-
-  // Lines between close particles
-  const lineGeo = new THREE.BufferGeometry();
-  const maxLines = PARTICLE_COUNT * PARTICLE_COUNT;
+  // ── Lines between close particles ─────────
+  const maxLines = PARTICLE_COUNT * 12;
   const linePositions = new Float32Array(maxLines * 6);
   const lineColors    = new Float32Array(maxLines * 6);
+  const lineA = new Uint16Array(maxLines), lineB = new Uint16Array(maxLines);
+  let lineCount = 0;
+  const lineGeo = new THREE.BufferGeometry();
   lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3).setUsage(THREE.DynamicDrawUsage));
   lineGeo.setAttribute('color',    new THREE.BufferAttribute(lineColors, 3).setUsage(THREE.DynamicDrawUsage));
+  const lineMat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.9, depthWrite: false });
+  group.add(new THREE.LineSegments(lineGeo, lineMat));
 
-  const lineMat = new THREE.LineSegments(lineGeo, new THREE.LineBasicMaterial({
-    vertexColors: true,
-    transparent: true,
-    opacity: 0.35,
-  }));
-  scene.add(lineMat);
+  // ── Constellation lines to the cursor ─────
+  const MOUSE_LINES = 14;
+  const mousePositions = new Float32Array(MOUSE_LINES * 6);
+  const mouseColors    = new Float32Array(MOUSE_LINES * 6);
+  const mouseGeo = new THREE.BufferGeometry();
+  mouseGeo.setAttribute('position', new THREE.BufferAttribute(mousePositions, 3).setUsage(THREE.DynamicDrawUsage));
+  mouseGeo.setAttribute('color',    new THREE.BufferAttribute(mouseColors, 3).setUsage(THREE.DynamicDrawUsage));
+  const mouseMat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 1, depthWrite: false });
+  group.add(new THREE.LineSegments(mouseGeo, mouseMat));
 
-  const MAX_DIST = 180;
-  let mouseX = 0, mouseY = 0;
+  // ── Signal pulses travelling along connections ("neurons firing") ──
+  const MAX_PULSES = isSmall ? 12 : 26;
+  const pulses = [];
+  const pulsePos = new Float32Array(MAX_PULSES * 3);
+  const pulseGeo = new THREE.BufferGeometry();
+  pulseGeo.setAttribute('position', new THREE.BufferAttribute(pulsePos, 3).setUsage(THREE.DynamicDrawUsage));
+  const pulseMat = new THREE.PointsMaterial({
+    size: 24, map: glowTex, transparent: true, depthWrite: false, sizeAttenuation: true,
+  });
+  group.add(new THREE.Points(pulseGeo, pulseMat));
+
+  function spawnPulse(a, b) {
+    if (pulses.length >= MAX_PULSES || a === b) return;
+    pulses.push({ a, b, t: 0, speed: 0.012 + Math.random() * 0.016 });
+  }
+
+  // Neighbours of a node, from this frame's connections
+  function neighbours(i) {
+    const out = [];
+    for (let k = 0; k < lineCount; k++) {
+      if (lineA[k] === i) out.push(lineB[k]); else if (lineB[k] === i) out.push(lineA[k]);
+    }
+    return out;
+  }
+
+  // ── Distant star dust for deep parallax ────
+  const DUST = isSmall ? 160 : 380;
+  const dustPos = new Float32Array(DUST * 3);
+  for (let i = 0; i < DUST; i++) {
+    dustPos[i * 3]     = (Math.random() - 0.5) * bounds.w * 3;
+    dustPos[i * 3 + 1] = (Math.random() - 0.5) * bounds.h * 3;
+    dustPos[i * 3 + 2] = -350 - Math.random() * 600;
+  }
+  const dustGeo = new THREE.BufferGeometry();
+  dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+  const dustMat = new THREE.PointsMaterial({
+    size: 4.5, map: glowTex, transparent: true, opacity: 0.85, depthWrite: false, sizeAttenuation: true, fog: false,
+  });
+  const dust = new THREE.Points(dustGeo, dustMat);
+  scene.add(dust);
+
+  // ── Hub neurons: every 8th node is drawn larger and brighter ──
+  const HUBS = [];
+  for (let i = 0; i < PARTICLE_COUNT; i += 8) HUBS.push(i);
+  const hubPos = new Float32Array(HUBS.length * 3);
+  const hubCol = new Float32Array(HUBS.length * 3);
+  const hubGeo = new THREE.BufferGeometry();
+  hubGeo.setAttribute('position', new THREE.BufferAttribute(hubPos, 3).setUsage(THREE.DynamicDrawUsage));
+  hubGeo.setAttribute('color',    new THREE.BufferAttribute(hubCol, 3).setUsage(THREE.DynamicDrawUsage));
+  const hubMat = new THREE.PointsMaterial({
+    size: 32, map: glowTex, vertexColors: true, transparent: true, depthWrite: false, sizeAttenuation: true,
+  });
+  group.add(new THREE.Points(hubGeo, hubMat));
+
+  // ── Wireframe "neural globe": geodesic sphere + orbit rings, far in the background ──
+  const globe = new THREE.Group();
+  const GLOBE_R = isSmall ? 150 : 240;
+  const icoGeo = new THREE.IcosahedronGeometry(GLOBE_R, 2);
+  const globeLineMat = new THREE.LineBasicMaterial({ transparent: true, depthWrite: false });
+  globe.add(new THREE.LineSegments(new THREE.WireframeGeometry(icoGeo), globeLineMat));
+  // One glowing point per unique vertex
+  const seenV = new Set(), gVerts = [];
+  const ip = icoGeo.attributes.position;
+  for (let i = 0; i < ip.count; i++) {
+    const key = ip.getX(i).toFixed(1) + ',' + ip.getY(i).toFixed(1) + ',' + ip.getZ(i).toFixed(1);
+    if (!seenV.has(key)) { seenV.add(key); gVerts.push(ip.getX(i), ip.getY(i), ip.getZ(i)); }
+  }
+  const gGeo = new THREE.BufferGeometry();
+  gGeo.setAttribute('position', new THREE.Float32BufferAttribute(gVerts, 3));
+  const globePtsMat = new THREE.PointsMaterial({ size: 10, map: glowTex, transparent: true, opacity: 1, depthWrite: false, sizeAttenuation: true });
+  globe.add(new THREE.Points(gGeo, globePtsMat));
+  // Three tilted orbit rings with a satellite each
+  const ringMat = new THREE.LineBasicMaterial({ transparent: true, opacity: 0.5, depthWrite: false });
+  const satMat  = new THREE.PointsMaterial({ size: 20, map: glowTex, transparent: true, depthWrite: false, sizeAttenuation: true });
+  const orbits = [];
+  for (let k = 0; k < 3; k++) {
+    const pts = [];
+    const R = GLOBE_R * (1.3 + k * 0.18);
+    for (let a = 0; a <= 96; a++) { const th = (a / 96) * Math.PI * 2; pts.push(new THREE.Vector3(Math.cos(th) * R, 0, Math.sin(th) * R)); }
+    const orbit = new THREE.Group();
+    orbit.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts), ringMat));
+    // The satellite spins inside the tilted ring's own plane
+    const spin = new THREE.Group();
+    spin.add(new THREE.Points(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(R, 0, 0)]), satMat));
+    orbit.add(spin);
+    orbit.rotation.set(0.4 + k * 0.7, k * 0.9, k * 0.5);
+    orbits.push({ spin, speed: 0.25 + k * 0.12 });
+    globe.add(orbit);
+  }
+  const globeBase = isSmall ? { x: 0, y: 0.32, z: -420 } : { x: 0.3, y: 0.06, z: -320 };
+  scene.add(globe);
+
+
+  // ── Foreground bokeh: large soft glows close to the camera (strong parallax) ──
+  const BOKEH = isSmall ? 10 : 22;
+  const bokeh = [];
+  const bokehPos = new Float32Array(BOKEH * 3);
+  for (let i = 0; i < BOKEH; i++) {
+    bokeh.push({
+      x: (Math.random() - 0.5) * bounds.w * 0.9, y: (Math.random() - 0.5) * bounds.h * 0.9,
+      z: 150 + Math.random() * 230, vx: (Math.random() - 0.5) * 0.12, vy: (Math.random() - 0.5) * 0.12,
+    });
+  }
+  const bokehGeo = new THREE.BufferGeometry();
+  bokehGeo.setAttribute('position', new THREE.BufferAttribute(bokehPos, 3).setUsage(THREE.DynamicDrawUsage));
+  const bokehMat = new THREE.PointsMaterial({ size: 70, map: glowTex, transparent: true, depthWrite: false, sizeAttenuation: true, fog: false });
+  scene.add(new THREE.Points(bokehGeo, bokehMat));
+
+  // ── Shooting stars: launch from deep space and home in on a neuron, joining the network ──
+  const COMETS = isSmall ? 2 : 5;
+  const comets = [];
+  const cometPos = new Float32Array(COMETS * 6);
+  const cometCol = new Float32Array(COMETS * 6);
+  const cometHead = new Float32Array(COMETS * 3);
+  const cometTarget = new THREE.Vector3();
+  function resetComet(c, initial) {
+    // Start far away near the edge of the view, aimed loosely inward
+    const ang = Math.random() * Math.PI * 2;
+    c.x = Math.cos(ang) * bounds.w * (0.7 + Math.random() * 0.4);
+    c.y = Math.sin(ang) * bounds.h * (0.7 + Math.random() * 0.4);
+    c.z = -700 - Math.random() * 300;
+    // Prefer hub neurons so the landing reads as intentional
+    c.target = Math.random() < 0.6 ? HUBS[(Math.random() * HUBS.length) | 0] : (Math.random() * PARTICLE_COUNT) | 0;
+    c.speed = 7 + Math.random() * 5;
+    // Sideways kick so the homing path curves instead of flying straight
+    c.vx = -Math.cos(ang) * 2 + (Math.random() - 0.5) * 6;
+    c.vy = -Math.sin(ang) * 2 + (Math.random() - 0.5) * 6;
+    c.vz = c.speed * 0.6;
+    c.len = 22 + Math.random() * 18;
+    c.wait = initial ? Math.random() * 240 : 90 + Math.random() * 240; // frames before launch
+  }
+
+  // A shooting star reaches its neuron: the node flashes, a small ring pops, signals fire outward
+  function cometLands(i) {
+    const p = particles[i];
+    p.flash = 1;
+    neighbours(i).slice(0, 4).forEach(n => spawnPulse(i, n));
+    spawnRipple(p.x, p.y, p.z, 90);
+  }
+  for (let i = 0; i < COMETS; i++) { const c = {}; resetComet(c, true); comets.push(c); }
+  const cometGeo = new THREE.BufferGeometry();
+  cometGeo.setAttribute('position', new THREE.BufferAttribute(cometPos, 3).setUsage(THREE.DynamicDrawUsage));
+  cometGeo.setAttribute('color',    new THREE.BufferAttribute(cometCol, 3).setUsage(THREE.DynamicDrawUsage));
+  const cometMat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 1, depthWrite: false });
+  scene.add(new THREE.LineSegments(cometGeo, cometMat));
+  const cometHeadGeo = new THREE.BufferGeometry();
+  cometHeadGeo.setAttribute('position', new THREE.BufferAttribute(cometHead, 3).setUsage(THREE.DynamicDrawUsage));
+  const cometHeadMat = new THREE.PointsMaterial({ size: 24, map: glowTex, transparent: true, depthWrite: false, sizeAttenuation: true });
+  scene.add(new THREE.Points(cometHeadGeo, cometHeadMat));
+  // Glowing beaded trail behind each star, so it reads as a thick, bright streak
+  const TRAIL = 12;
+  const trailPos = new Float32Array(COMETS * TRAIL * 3);
+  const trailCol = new Float32Array(COMETS * TRAIL * 3);
+  const trailGeo = new THREE.BufferGeometry();
+  trailGeo.setAttribute('position', new THREE.BufferAttribute(trailPos, 3).setUsage(THREE.DynamicDrawUsage));
+  trailGeo.setAttribute('color',    new THREE.BufferAttribute(trailCol, 3).setUsage(THREE.DynamicDrawUsage));
+  const trailMat = new THREE.PointsMaterial({ size: 11, map: glowTex, vertexColors: true, transparent: true, depthWrite: false, sizeAttenuation: true });
+  scene.add(new THREE.Points(trailGeo, trailMat));
+
+  // ── Click shockwave ring ───────────────────
+  const ripples = [];
+  const rippleGeo = new THREE.RingGeometry(0.92, 1, 72);
+
+  function applyTheme(light) {
+    const th = light ? THEMES.light : THEMES.dark;
+    scene.fog.color.setHex(th.bg);
+    CYAN.setHex(th.cyan); PURPLE.setHex(th.purple); PULSE.setHex(th.pulse); FADE.setHex(th.fade);
+    particles.forEach(p => p.color.copy(CYAN).lerp(PURPLE, p.mix));
+    [pointsMat, lineMat, mouseMat, pulseMat, dustMat, hubMat, globeLineMat, globePtsMat, ringMat, satMat,
+     bokehMat, cometMat, cometHeadMat, trailMat].forEach(m => { m.blending = th.blend; m.needsUpdate = true; });
+    globeLineMat.color.copy(PURPLE).lerp(CYAN, 0.35);
+    globeLineMat.opacity = th.globeOpacity;
+    globePtsMat.color.copy(CYAN);
+    ringMat.color.copy(CYAN);
+    satMat.color.copy(PULSE);
+    bokehMat.color.copy(CYAN).lerp(PURPLE, 0.4);
+    bokehMat.opacity = th.bokehOpacity;
+    cometHeadMat.color.copy(PULSE);
+    pulseMat.color.copy(PULSE);
+    dustMat.color.setHex(th.dust);
+    lineMat.opacity = light ? 0.95 : 0.9;
+    ripples.forEach(r => { r.mesh.material.blending = th.blend; r.mesh.material.color.copy(CYAN); });
+    if (reduceMotion) frame(0);
+  }
+
+  // Colour that fades toward the page background as strength → 0 (works for both themes)
+  function fadeColor(out, color, s) {
+    out[0] = FADE.r + (color.r - FADE.r) * s;
+    out[1] = FADE.g + (color.g - FADE.g) * s;
+    out[2] = FADE.b + (color.b - FADE.b) * s;
+  }
+  const c3 = [0, 0, 0];
+
+  const MAX_DIST = 190, MAX_DIST_SQ = MAX_DIST * MAX_DIST;
+  const MOUSE_DIST = 230, MOUSE_DIST_SQ = MOUSE_DIST * MOUSE_DIST;
+  let parallaxX = 0, parallaxY = 0;
+  let mouseWorld = null; // cursor position on the z = 0 plane
+  let mouseMovedAt = -Infinity;
+  let scrollProgress = 0;
+  const cursor = new THREE.Vector3();
+
+  function toLocal(clientX, clientY) {
+    cursor.set((clientX / window.innerWidth - 0.5) * bounds.w, -(clientY / window.innerHeight - 0.5) * bounds.h, 0);
+    return group.worldToLocal(cursor);
+  }
 
   document.addEventListener('mousemove', (e) => {
-    mouseX = (e.clientX - window.innerWidth  / 2) * 0.4;
-    mouseY = (e.clientY - window.innerHeight / 2) * -0.4;
+    const nx = e.clientX / window.innerWidth - 0.5;
+    const ny = e.clientY / window.innerHeight - 0.5;
+    parallaxX = nx * 120;
+    parallaxY = -ny * 120;
+    mouseWorld = { x: e.clientX, y: e.clientY };
+    mouseMovedAt = performance.now();
+  });
+  document.addEventListener('mouseleave', () => { mouseWorld = null; });
+  window.addEventListener('scroll', () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    scrollProgress = max > 0 ? window.scrollY / max : 0;
+  }, { passive: true });
+
+  // Click on empty background → shockwave + a burst of signals from the nearest node
+  document.addEventListener('pointerdown', (e) => {
+    if (reduceMotion || e.button !== 0) return;
+    if (e.target.closest('a, button, input, textarea, select, label, [role="dialog"], .chat-window, .cmdk-overlay, .project-modal, .card, .project-card, .timeline-item, .tag')) return;
+    const p = toLocal(e.clientX, e.clientY);
+    const px = p.x, py = p.y, pz = p.z;
+
+    let nearest = -1, best = Infinity;
+    particles.forEach((q, i) => {
+      const dx = q.x - px, dy = q.y - py, d = Math.sqrt(dx * dx + dy * dy);
+      if (d < 280 && d > 0.01) {
+        const f = (1 - d / 280) * 2.6;   // push outward, strongest near the click
+        q.vx += (dx / d) * f;
+        q.vy += (dy / d) * f;
+        q.flash = Math.max(q.flash, 1 - d / 280);
+      }
+      if (d < best) { best = d; nearest = i; }
+    });
+    if (nearest >= 0) neighbours(nearest).slice(0, 6).forEach(n => spawnPulse(nearest, n));
+    spawnRipple(px, py, pz, 260);
   });
 
-  function animate() {
-    requestAnimationFrame(animate);
+  // Expanding ring in network space (size = final radius growth)
+  function spawnRipple(x, y, z, size) {
+    const mat = new THREE.MeshBasicMaterial({
+      color: CYAN.clone(), transparent: true, opacity: 0.9, depthWrite: false, side: THREE.DoubleSide,
+      blending: document.documentElement.dataset.theme === 'light' ? THREE.NormalBlending : THREE.AdditiveBlending,
+    });
+    const mesh = new THREE.Mesh(rippleGeo, mat);
+    mesh.position.set(x, y, z);
+    group.add(mesh);
+    ripples.push({ mesh, t: 0, size });
+  }
 
-    const posAttr = geometry.attributes.position;
-    let lineIdx = 0;
+  let lastSpawn = 0;
 
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      positions[i].x += velocities[i].x;
-      positions[i].y += velocities[i].y;
-
-      const hw = window.innerWidth  * 0.7;
-      const hh = window.innerHeight * 0.7;
-      if (Math.abs(positions[i].x) > hw) velocities[i].x *= -1;
-      if (Math.abs(positions[i].y) > hh) velocities[i].y *= -1;
-
-      posAttr.array[i * 3]     = positions[i].x;
-      posAttr.array[i * 3 + 1] = positions[i].y;
-      posAttr.array[i * 3 + 2] = positions[i].z;
-
-      for (let j = i + 1; j < PARTICLE_COUNT; j++) {
-        const dx = positions[i].x - positions[j].x;
-        const dy = positions[i].y - positions[j].y;
-        const dist = Math.sqrt(dx*dx + dy*dy);
-
-        if (dist < MAX_DIST) {
-          const t = 1 - dist / MAX_DIST;
-          linePositions[lineIdx * 6]     = positions[i].x;
-          linePositions[lineIdx * 6 + 1] = positions[i].y;
-          linePositions[lineIdx * 6 + 2] = positions[i].z;
-          linePositions[lineIdx * 6 + 3] = positions[j].x;
-          linePositions[lineIdx * 6 + 4] = positions[j].y;
-          linePositions[lineIdx * 6 + 5] = positions[j].z;
-
-          // cyan → purple gradient based on index
-          const r = 0 + t * 0.66;
-          const g = 0.9 * t;
-          const b = 1.0;
-          lineColors[lineIdx * 6]     = r; lineColors[lineIdx * 6 + 1] = g; lineColors[lineIdx * 6 + 2] = b;
-          lineColors[lineIdx * 6 + 3] = r; lineColors[lineIdx * 6 + 4] = g; lineColors[lineIdx * 6 + 5] = b;
-          lineIdx++;
-        }
+  function frame(time) {
+    const t = time * 0.001;
+    const hw = bounds.w * 0.7, hh = bounds.h * 0.7;
+    // Magnet strength: 1 while the mouse moves, fading to 0 about a second after it rests
+    let magX = 0, magY = 0, magnet = 0;
+    if (mouseWorld && !reduceMotion) {
+      magnet = Math.max(0, Math.min(1, 1 - (performance.now() - mouseMovedAt - 600) / 900));
+      if (magnet > 0) {
+        const l = toLocal(mouseWorld.x, mouseWorld.y);
+        magX = l.x; magY = l.y;
       }
     }
 
-    lineGeo.setDrawRange(0, lineIdx * 2);
-    lineGeo.attributes.position.needsUpdate = true;
-    lineGeo.attributes.color.needsUpdate    = true;
-    posAttr.needsUpdate = true;
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const p = particles[i];
+      if (!reduceMotion) {
+        // Ease back to resting drift after a shockwave
+        p.vx += (p.bvx - p.vx) * 0.03;
+        p.vy += (p.bvy - p.vy) * 0.03;
+        // Nodes near a moving cursor are drawn toward it, but kept at a little distance so they
+        // swirl around the pointer instead of clumping; the pull fades out once the mouse rests
+        if (magnet) {
+          const mdx = magX - p.x, mdy = magY - p.y, md = Math.sqrt(mdx * mdx + mdy * mdy);
+          if (md < 220 && md > 1) {
+            const f = (md < 70 ? -(1 - md / 70) * 0.06 : (1 - md / 220) * 0.045) * magnet;
+            p.vx += (mdx / md) * f;
+            p.vy += (mdy / md) * f;
+          }
+        }
+        p.x += p.vx;
+        p.y += p.vy;
+        // Bounce off the edges by pointing velocity inward (not flipping it), so a node pushed
+        // past the edge can't toggle direction every frame and get stuck there
+        if (Math.abs(p.x) > hw) {
+          const inward = -Math.sign(p.x);
+          p.vx = Math.abs(p.vx) * inward; p.bvx = Math.abs(p.bvx) * inward; p.x = -inward * hw;
+        }
+        if (Math.abs(p.y) > hh) {
+          const inward = -Math.sign(p.y);
+          p.vy = Math.abs(p.vy) * inward; p.bvy = Math.abs(p.bvy) * inward; p.y = -inward * hh;
+        }
+        p.flash *= 0.94;
+      }
+      posArray[i * 3]     = p.x;
+      posArray[i * 3 + 1] = p.y;
+      posArray[i * 3 + 2] = p.z;
 
-    // Mouse parallax
-    camera.position.x += (mouseX - camera.position.x) * 0.04;
-    camera.position.y += (mouseY - camera.position.y) * 0.04;
+      // Gentle twinkle, plus a flash when a signal arrives
+      const glow = reduceMotion ? 1 : Math.min(1.6, 0.85 + 0.25 * Math.sin(t * 1.6 + p.phase) + p.flash);
+      if (glow <= 1) {
+        fadeColor(c3, p.color, glow);
+      } else {
+        tmp.copy(p.color).lerp(PULSE, (glow - 1) / 0.6);
+        c3[0] = tmp.r; c3[1] = tmp.g; c3[2] = tmp.b;
+      }
+      colorArray[i * 3] = c3[0]; colorArray[i * 3 + 1] = c3[1]; colorArray[i * 3 + 2] = c3[2];
+    }
+
+    let n = 0;
+    for (let i = 0; i < PARTICLE_COUNT && n < maxLines; i++) {
+      const a = particles[i];
+      for (let j = i + 1; j < PARTICLE_COUNT && n < maxLines; j++) {
+        const b = particles[j];
+        const dx = a.x - b.x, dy = a.y - b.y, dz = a.z - b.z;
+        const d2 = dx * dx + dy * dy + dz * dz * 0.35;
+        if (d2 >= MAX_DIST_SQ) continue;
+        // Brighter when closer; each end takes its particle's colour
+        const s = Math.min(1, (1 - Math.sqrt(d2) / MAX_DIST) * 1.25);
+        const o = n * 6;
+        linePositions[o]     = a.x; linePositions[o + 1] = a.y; linePositions[o + 2] = a.z;
+        linePositions[o + 3] = b.x; linePositions[o + 4] = b.y; linePositions[o + 5] = b.z;
+        fadeColor(c3, a.color, s); lineColors[o] = c3[0]; lineColors[o + 1] = c3[1]; lineColors[o + 2] = c3[2];
+        fadeColor(c3, b.color, s); lineColors[o + 3] = c3[0]; lineColors[o + 4] = c3[1]; lineColors[o + 5] = c3[2];
+        lineA[n] = i; lineB[n] = j;
+        n++;
+      }
+    }
+    lineCount = n;
+    lineGeo.setDrawRange(0, n * 2);
+
+    // Signals: spawn now and then, travel along a connection, light up the node they reach,
+    // and sometimes continue on to a neighbour (a little chain reaction)
+    if (!reduceMotion) {
+      if (lineCount && time - lastSpawn > 420) {
+        lastSpawn = time;
+        const k = (Math.random() * lineCount) | 0;
+        Math.random() < 0.5 ? spawnPulse(lineA[k], lineB[k]) : spawnPulse(lineB[k], lineA[k]);
+      }
+      for (let i = pulses.length - 1; i >= 0; i--) {
+        const pu = pulses[i];
+        pu.t += pu.speed;
+        if (pu.t >= 1) {
+          particles[pu.b].flash = 1;
+          pulses.splice(i, 1);
+          if (Math.random() < 0.55) {
+            const next = neighbours(pu.b).filter(x => x !== pu.a);
+            if (next.length) spawnPulse(pu.b, next[(Math.random() * next.length) | 0]);
+          }
+        }
+      }
+    }
+    pulses.forEach((pu, i) => {
+      const a = particles[pu.a], b = particles[pu.b];
+      pulsePos[i * 3]     = a.x + (b.x - a.x) * pu.t;
+      pulsePos[i * 3 + 1] = a.y + (b.y - a.y) * pu.t;
+      pulsePos[i * 3 + 2] = a.z + (b.z - a.z) * pu.t;
+    });
+    pulseGeo.setDrawRange(0, pulses.length);
+    pulseGeo.attributes.position.needsUpdate = true;
+
+    let m = 0;
+    if (mouseWorld) {
+      // The camera looks at the origin, so the cursor maps straight onto the z = 0 plane;
+      // convert it into the rotated group's space so lines meet under the pointer
+      const local = toLocal(mouseWorld.x, mouseWorld.y);
+      const mx = local.x, my = local.y, mz = local.z;
+      for (let i = 0; i < PARTICLE_COUNT && m < MOUSE_LINES; i++) {
+        const p = particles[i];
+        const dx = p.x - mx, dy = p.y - my;
+        const d2 = dx * dx + dy * dy;
+        if (d2 >= MOUSE_DIST_SQ || Math.abs(p.z) > 220) continue;
+        const s = 1 - Math.sqrt(d2) / MOUSE_DIST;
+        const o = m * 6;
+        mousePositions[o]     = mx;  mousePositions[o + 1] = my;  mousePositions[o + 2] = mz;
+        mousePositions[o + 3] = p.x; mousePositions[o + 4] = p.y; mousePositions[o + 5] = p.z;
+        fadeColor(c3, CYAN, s);    mouseColors[o] = c3[0];     mouseColors[o + 1] = c3[1]; mouseColors[o + 2] = c3[2];
+        fadeColor(c3, p.color, s); mouseColors[o + 3] = c3[0]; mouseColors[o + 4] = c3[1]; mouseColors[o + 5] = c3[2];
+        m++;
+      }
+    }
+    mouseGeo.setDrawRange(0, m * 2);
+
+    // Hub neurons follow their particles
+    HUBS.forEach((pi, k) => {
+      const p = particles[pi];
+      hubPos[k * 3] = p.x; hubPos[k * 3 + 1] = p.y; hubPos[k * 3 + 2] = p.z;
+      hubCol[k * 3] = colorArray[pi * 3]; hubCol[k * 3 + 1] = colorArray[pi * 3 + 1]; hubCol[k * 3 + 2] = colorArray[pi * 3 + 2];
+    });
+    hubGeo.attributes.position.needsUpdate = true;
+    hubGeo.attributes.color.needsUpdate = true;
+
+    // Globe: slow spin, orbiting satellites, drifts up as the page scrolls
+    globe.position.set(globeBase.x * bounds.w, (globeBase.y + scrollProgress * 1.1) * bounds.h, globeBase.z);
+    if (!reduceMotion) {
+      globe.rotation.y = t * 0.08 + scrollProgress * 1.5;
+      globe.rotation.x = 0.35 + Math.sin(t * 0.12) * 0.12;
+      orbits.forEach(o => { o.spin.rotation.y += o.speed * 0.01; });
+    }
+
+
+    // Bokeh drift
+    bokeh.forEach((b, i) => {
+      if (!reduceMotion) {
+        b.x += b.vx; b.y += b.vy;
+        if (Math.abs(b.x) > bounds.w * 0.6) b.vx *= -1;
+        if (Math.abs(b.y) > bounds.h * 0.6) b.vy *= -1;
+      }
+      bokehPos[i * 3] = b.x; bokehPos[i * 3 + 1] = b.y; bokehPos[i * 3 + 2] = b.z;
+    });
+    bokehGeo.attributes.position.needsUpdate = true;
+
+    // Shooting stars: steer toward their neuron (which keeps moving), land, relaunch
+    comets.forEach((c, i) => {
+      const o = i * 6;
+      if (reduceMotion || c.wait > 0) {
+        if (!reduceMotion) c.wait--;
+        // Parked out of sight (beyond the camera's far plane) while waiting
+        for (let k = 0; k < 6; k++) cometPos[o + k] = k % 3 === 2 ? -5000 : 0;
+        cometHead[i * 3] = 0; cometHead[i * 3 + 1] = 0; cometHead[i * 3 + 2] = -5000;
+        for (let k = 0; k < TRAIL; k++) { const q = (i * TRAIL + k) * 3; trailPos[q] = 0; trailPos[q + 1] = 0; trailPos[q + 2] = -5000; }
+        return;
+      }
+      const p = particles[c.target];
+      cometTarget.set(p.x, p.y, p.z);
+      group.localToWorld(cometTarget); // neurons live in the rotating group, comets in world space
+      const dx = cometTarget.x - c.x, dy = cometTarget.y - c.y, dz = cometTarget.z - c.z;
+      const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      if (dist < c.speed * 1.5) {
+        cometLands(c.target);
+        resetComet(c, false);
+        return;
+      }
+      // Blend the velocity toward the target direction → a smooth curved approach
+      const steer = 0.07;
+      c.vx += ((dx / dist) * c.speed - c.vx) * steer;
+      c.vy += ((dy / dist) * c.speed - c.vy) * steer;
+      c.vz += ((dz / dist) * c.speed - c.vz) * steer;
+      c.x += c.vx; c.y += c.vy; c.z += c.vz;
+
+      const n = Math.sqrt(c.vx * c.vx + c.vy * c.vy + c.vz * c.vz);
+      cometPos[o] = c.x; cometPos[o + 1] = c.y; cometPos[o + 2] = c.z;
+      const tail = c.len * 6;
+      cometPos[o + 3] = c.x - (c.vx / n) * tail; cometPos[o + 4] = c.y - (c.vy / n) * tail; cometPos[o + 5] = c.z - (c.vz / n) * tail;
+      for (let k = 0; k < TRAIL; k++) {
+        const f = k / (TRAIL - 1), q = (i * TRAIL + k) * 3;
+        trailPos[q]     = c.x - (c.vx / n) * tail * f * 0.85;
+        trailPos[q + 1] = c.y - (c.vy / n) * tail * f * 0.85;
+        trailPos[q + 2] = c.z - (c.vz / n) * tail * f * 0.85;
+        tmp.copy(PULSE).lerp(CYAN, f);
+        fadeColor(c3, tmp, Math.pow(1 - f, 1.4));
+        trailCol[q] = c3[0]; trailCol[q + 1] = c3[1]; trailCol[q + 2] = c3[2];
+      }
+      fadeColor(c3, PULSE, 1);  cometCol[o] = c3[0];     cometCol[o + 1] = c3[1]; cometCol[o + 2] = c3[2];
+      fadeColor(c3, CYAN, 0);   cometCol[o + 3] = c3[0]; cometCol[o + 4] = c3[1]; cometCol[o + 5] = c3[2];
+      cometHead[i * 3] = c.x; cometHead[i * 3 + 1] = c.y; cometHead[i * 3 + 2] = c.z;
+    });
+    cometGeo.attributes.position.needsUpdate = true;
+    cometGeo.attributes.color.needsUpdate = true;
+    cometHeadGeo.attributes.position.needsUpdate = true;
+    trailGeo.attributes.position.needsUpdate = true;
+    trailGeo.attributes.color.needsUpdate = true;
+
+    // Shockwave rings expand and fade
+    for (let i = ripples.length - 1; i >= 0; i--) {
+      const r = ripples[i];
+      r.t += 0.018;
+      const s = 10 + r.t * r.size;
+      r.mesh.scale.set(s, s, s);
+      r.mesh.material.opacity = Math.max(0, 0.9 * (1 - r.t));
+      if (r.t >= 1) { group.remove(r.mesh); r.mesh.material.dispose(); ripples.splice(i, 1); }
+    }
+
+    geometry.attributes.position.needsUpdate = true;
+    geometry.attributes.color.needsUpdate = true;
+    lineGeo.attributes.position.needsUpdate = true;
+    lineGeo.attributes.color.needsUpdate = true;
+    mouseGeo.attributes.position.needsUpdate = true;
+    mouseGeo.attributes.color.needsUpdate = true;
+
+    // Mouse parallax; the network turns slowly in 3D as you scroll down the page
+    camera.position.x += (parallaxX - camera.position.x) * 0.04;
+    camera.position.y += (parallaxY - camera.position.y) * 0.04;
+    camera.position.z += ((reduceMotion ? 600 : 600 - scrollProgress * 110) - camera.position.z) * 0.05;
     camera.lookAt(scene.position);
+    if (!reduceMotion) {
+      const sway = Math.sin(t * 0.07) * 0.22;
+      group.rotation.y += ((scrollProgress - 0.5) * 0.6 + sway - group.rotation.y) * 0.05;
+      group.rotation.x += ((scrollProgress - 0.5) * -0.25 - group.rotation.x) * 0.05;
+      group.rotation.z = Math.sin(t * 0.05) * 0.05;
+      dust.rotation.z = t * 0.004;
+      dust.rotation.y = group.rotation.y * 0.4;
+    }
+    group.updateMatrixWorld();
 
     renderer.render(scene, camera);
   }
 
-  animate();
+  applyTheme(document.documentElement.dataset.theme === 'light');
+  window.addEventListener('themechange', (e) => applyTheme(e.detail.light));
+
+  if (reduceMotion) {
+    frame(0);
+  } else {
+    (function loop(time) { frame(time); requestAnimationFrame(loop); })(0);
+  }
 
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    bounds = viewBounds();
+    if (reduceMotion) frame(0);
   });
 })();
 
@@ -716,6 +2987,126 @@ document.querySelectorAll('.mobile-link').forEach(a => {
 });
 
 // ─────────────────────────────────────────────
+// 3D EFFECTS & SCROLL UI
+// ─────────────────────────────────────────────
+(function () {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointer  = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  // Cards tilt toward the cursor with a moving glare
+  if (finePointer && !reduceMotion) {
+    const TILT_SELECTOR = '.skill-group, .project-card, .stat-card, .timeline-item, .edu-card, ' +
+                          '.blog-card, .blog-card-full, .contact-form-card, .about-img-wrap, .quote-card';
+    document.querySelectorAll(TILT_SELECTOR).forEach(el => {
+      el.classList.add('tilt');
+      const glare = document.createElement('span');
+      glare.className = 'tilt-glare';
+      el.appendChild(glare);
+      // Big cards tilt less so they don't feel wobbly
+      const maxDeg = () => Math.max(2, Math.min(8, 2400 / el.offsetWidth));
+
+      el.addEventListener('mouseenter', () => el.classList.add('tilting'));
+      el.addEventListener('mousemove', (e) => {
+        const r = el.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width;
+        const y = (e.clientY - r.top) / r.height;
+        const d = maxDeg();
+        el.style.setProperty('--ry', ((x - 0.5) * d).toFixed(2) + 'deg');
+        el.style.setProperty('--rx', ((0.5 - y) * d).toFixed(2) + 'deg');
+        el.style.setProperty('--mx', (x * 100).toFixed(1) + '%');
+        el.style.setProperty('--my', (y * 100).toFixed(1) + '%');
+      });
+      el.addEventListener('mouseleave', () => {
+        el.classList.remove('tilting');
+        el.style.setProperty('--rx', '0deg');
+        el.style.setProperty('--ry', '0deg');
+      });
+    });
+  }
+
+  // Cursor spotlight + hero parallax (batched per frame)
+  const hero = document.querySelector('.hero');
+  if (finePointer && !reduceMotion) {
+    let px = 0, py = 0, queued = false;
+    document.addEventListener('mousemove', (e) => {
+      px = e.clientX; py = e.clientY;
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        document.body.style.setProperty('--cx', px + 'px');
+        document.body.style.setProperty('--cy', py + 'px');
+        if (hero) {
+          hero.style.setProperty('--px', (px / window.innerWidth  - 0.5).toFixed(3));
+          hero.style.setProperty('--py', (py / window.innerHeight - 0.5).toFixed(3));
+        }
+      });
+    });
+  }
+
+  // Scroll: progress bar, compact nav, active section link, timeline fill
+  const nav      = document.getElementById('navbar');
+  const progress = document.getElementById('scroll-progress');
+  const timeline = document.querySelector('.timeline');
+  // Section highlighting only applies on the homepage (other pages reuse ids like "experience");
+  // elsewhere the link for the current page is highlighted instead
+  const onHome   = window.location.pathname === '/';
+  const navLinks = onHome ? [...document.querySelectorAll('.nav-links a[href^="/#"]')] : [];
+  const sections = navLinks
+    .map(a => document.getElementById(a.getAttribute('href').slice(2)))
+    .filter(Boolean);
+  if (!onHome) {
+    document.querySelectorAll('.nav-links a:not([href^="/#"])').forEach(a => {
+      if (window.location.pathname.startsWith(a.getAttribute('href'))) a.classList.add('active');
+    });
+  }
+
+  function onScroll() {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    progress.style.transform = 'scaleX(' + (max > 0 ? window.scrollY / max : 0) + ')';
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+
+    let current = null;
+    sections.forEach(s => { if (s.getBoundingClientRect().top < window.innerHeight * 0.35) current = s.id; });
+    navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '/#' + current));
+
+    if (timeline) {
+      const r = timeline.getBoundingClientRect();
+      const p = (window.innerHeight * 0.6 - r.top) / r.height;
+      timeline.style.setProperty('--fill', Math.max(0, Math.min(1, p)).toFixed(3));
+    }
+  }
+
+  let scrollQueued = false;
+  window.addEventListener('scroll', () => {
+    if (scrollQueued) return;
+    scrollQueued = true;
+    requestAnimationFrame(() => { scrollQueued = false; onScroll(); });
+  }, { passive: true });
+  onScroll();
+
+  // Count numbers up when they scroll into view ("20+" → 0…20+)
+  document.querySelectorAll('.stat-card .num').forEach(el => {
+    const m = el.textContent.trim().match(/^(\d+)(.*)$/);
+    if (!m || reduceMotion) return;
+    const target = parseInt(m[1], 10), suffix = m[2];
+    el.textContent = '0' + suffix;
+    const io = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      io.disconnect();
+      const start = performance.now(), dur = 1400;
+      (function step(now) {
+        const t = Math.min(1, (now - start) / dur);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(target * eased) + suffix;
+        if (t < 1) requestAnimationFrame(step);
+      })(start);
+    }, { threshold: 0.6 });
+    io.observe(el);
+  });
+})();
+
+// ─────────────────────────────────────────────
 // AI CHATBOT
 // ─────────────────────────────────────────────
 (function () {
@@ -728,64 +3119,266 @@ document.querySelectorAll('.mobile-link').forEach(a => {
   let history     = [];
   let waiting     = false;
 
-  toggle.addEventListener('click', () => {
-    win.classList.toggle('open');
-    if (win.classList.contains('open')) input.focus();
+  const avatarSrc = document.querySelector('.chat-avatar img').src;
+
+  function setOpen(open) {
+    win.classList.toggle('open', open);
+    toggle.classList.toggle('active', open);
+    toggle.setAttribute('aria-expanded', open);
+    document.body.classList.toggle('chat-open', open);
+    if (open) {
+      if (window.dismissChatNotification) window.dismissChatNotification();
+      input.focus();
+    }
+  }
+
+  toggle.addEventListener('click', () => setOpen(!win.classList.contains('open')));
+
+  closeBtn.addEventListener('click', () => setOpen(false));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && win.classList.contains('open')) setOpen(false);
   });
 
-  closeBtn.addEventListener('click', () => win.classList.remove('open'));
+  // Subtle 3D tilt + glare that follows the cursor (mouse devices only)
+  const canTilt = window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
+                  !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (canTilt) {
+    win.addEventListener('mousemove', (e) => {
+      const r = win.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width;
+      const y = (e.clientY - r.top) / r.height;
+      win.style.setProperty('--ry', ((x - 0.5) * 5).toFixed(2) + 'deg');
+      win.style.setProperty('--rx', ((0.5 - y) * 5).toFixed(2) + 'deg');
+      win.style.setProperty('--mx', (x * 100).toFixed(1) + '%');
+      win.style.setProperty('--my', (y * 100).toFixed(1) + '%');
+    });
+    win.addEventListener('mouseleave', () => {
+      win.style.setProperty('--rx', '0deg');
+      win.style.setProperty('--ry', '0deg');
+    });
+  }
 
-  function appendMsg(text, role) {
+  // Minimal, safe markdown → HTML for bot replies (bold, italics, code, links, lists, paragraphs)
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function formatInline(s) {
+    return escapeHtml(s)
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/(^|[^*])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>')
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+      .replace(/(^|[\s(>])([\w.+-]+@[\w-]+\.[\w.-]+\w)/g, '$1<a class="msg-mail" href="mailto:$2">✉ $2</a>');
+  }
+
+  // "**Label:** detail" bullets become a label + detail card
+  function formatListItem(s) {
+    const m = s.match(/^\*\*([^*]+?):?\*\*:?\s*(.*)$/);
+    if (m && m[2]) {
+      return '<span class="rich-label">' + formatInline(m[1]) + '</span>' + formatInline(m[2]);
+    }
+    return formatInline(s);
+  }
+
+  function renderMarkdown(text) {
+    const lines = text.replace(/\r/g, '').split('\n');
+    let html = '', listType = null, para = [];
+
+    const flushPara = () => { if (para.length) { html += '<p>' + para.join('<br>') + '</p>'; para = []; } };
+    const closeList = () => { if (listType) { html += '</' + listType + '>'; listType = null; } };
+
+    for (const raw of lines) {
+      const line = raw.trim();
+      const bullet = line.match(/^[-*•]\s+(.*)$/);
+      const numbered = line.match(/^\d+[.)]\s+(.*)$/);
+      if (bullet || numbered) {
+        flushPara();
+        const type = bullet ? 'ul' : 'ol';
+        if (listType !== type) {
+          closeList();
+          html += '<' + type + ' class="rich-list' + (numbered ? ' numbered' : '') + '">';
+          listType = type;
+        }
+        html += '<li>' + formatListItem((bullet || numbered)[1]) + '</li>';
+      } else if (!line) {
+        flushPara(); closeList();
+      } else {
+        closeList();
+        // Drop markdown heading markers but keep the text bold
+        const heading = line.match(/^#{1,6}\s+(.*)$/);
+        para.push(heading ? '<strong>' + formatInline(heading[1]) + '</strong>' : formatInline(line));
+      }
+    }
+    flushPara(); closeList();
+    return html;
+  }
+
+  // Each message sits in a row; bot rows get the small avatar on the left
+  function appendRow(role, fill) {
+    const row = document.createElement('div');
+    row.className = 'msg-row ' + role;
+    if (role === 'bot') {
+      const img = document.createElement('img');
+      img.className = 'msg-avatar';
+      img.src = avatarSrc;
+      img.alt = '';
+      row.appendChild(img);
+    }
     const div = document.createElement('div');
     div.className = 'msg ' + role;
-    div.textContent = text;
-    msgsEl.appendChild(div);
+    fill(div);
+    row.appendChild(div);
+    msgsEl.appendChild(row);
     msgsEl.scrollTop = msgsEl.scrollHeight;
-    return div;
+    return row;
+  }
+
+  function appendMsg(text, role) {
+    return appendRow(role, (div) => {
+      if (role === 'bot') div.innerHTML = renderMarkdown(text);
+      else div.textContent = text;
+    });
   }
 
   function appendTyping() {
-    const div = document.createElement('div');
-    div.className = 'msg bot typing';
-    div.innerHTML = '<span></span><span></span><span></span>';
-    msgsEl.appendChild(div);
-    msgsEl.scrollTop = msgsEl.scrollHeight;
-    return div;
+    return appendRow('bot', (div) => {
+      div.classList.add('typing');
+      div.innerHTML = '<span></span><span></span><span></span>';
+    });
   }
 
-  async function send() {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const CARET = '<span class="stream-caret"></span>';
+
+  function nearBottom() {
+    return msgsEl.scrollHeight - msgsEl.scrollTop - msgsEl.clientHeight < 80;
+  }
+
+  // Follow new content down, but never scroll the start of the reply out of view
+  function followReply(row) {
+    const bottom = msgsEl.scrollHeight - msgsEl.clientHeight;
+    msgsEl.scrollTop = Math.max(msgsEl.scrollTop, Math.min(bottom, row.offsetTop - 12));
+  }
+
+  // Reveal the reply word by word (like a streamed response), formatting as it goes
+  function streamInto(row, text) {
+    const div = row.querySelector('.msg');
+    return new Promise((resolve) => {
+      if (reduceMotion) { div.innerHTML = renderMarkdown(text); resolve(); return; }
+      const duration = Math.min(2600, Math.max(500, text.length * 12));
+      const step = Math.max(2, Math.ceil(text.length / (duration / 16)));
+      let i = 0;
+      (function tick() {
+        i = Math.min(text.length, i + step);
+        // Finish the current word so markdown isn't cut mid-token
+        while (i < text.length && !/\s/.test(text[i])) i++;
+        let partial = text.slice(0, i);
+        if ((partial.match(/\*\*/g) || []).length % 2) partial += '**';
+        const stick = nearBottom();
+        const html = renderMarkdown(partial);
+        div.innerHTML = i < text.length
+          ? html.replace(/(<\/(?:p|li)>)((?:<\/(?:ul|ol)>)?)$/, CARET + '$1$2')
+          : html;
+        if (stick) followReply(row);
+        if (i < text.length) requestAnimationFrame(tick); else resolve();
+      })();
+    });
+  }
+
+  const COPY_ICON  = '<svg viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16H8V7h11v14z"/></svg>';
+  const CHECK_ICON = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+
+  function appendActions(text) {
+    const bar = document.createElement('div');
+    bar.className = 'msg-actions';
+    const copy = document.createElement('button');
+    copy.type = 'button';
+    copy.className = 'msg-action';
+    copy.innerHTML = COPY_ICON + 'Copy';
+    copy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(text);
+        copy.innerHTML = CHECK_ICON + 'Copied';
+        copy.classList.add('done');
+        setTimeout(() => { copy.innerHTML = COPY_ICON + 'Copy'; copy.classList.remove('done'); }, 1600);
+      } catch { /* clipboard blocked — ignore */ }
+    });
+    bar.appendChild(copy);
+    msgsEl.appendChild(bar);
+  }
+
+  function appendFollowups(questions) {
+    if (!questions || !questions.length) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'chat-suggestions';
+    questions.forEach((q) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'chat-suggestion';
+      btn.textContent = q;
+      wrap.appendChild(btn);
+    });
+    msgsEl.appendChild(wrap);
+  }
+
+  async function addBotReply(text, followups, withExtras) {
+    const row = appendRow('bot', () => {});
+    await streamInto(row, text);
+    if (withExtras) {
+      const stick = nearBottom();
+      appendActions(text);
+      appendFollowups(followups);
+      if (stick) followReply(row);
+    }
+  }
+
+  async function send(preset) {
     if (waiting) return;
-    const text = input.value.trim();
+    const text = (typeof preset === 'string' ? preset : input.value).trim();
     if (!text) return;
 
     input.value = '';
     input.style.height = 'auto';
+    msgsEl.querySelectorAll('.chat-suggestions').forEach(el => el.remove());
     appendMsg(text, 'user');
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+    // Send prior turns only — the server appends the current message itself
+    const priorHistory = history.slice(-10);
     history.push({ role: 'user', content: text });
 
     waiting = true;
+    sendBtn.disabled = true;
     const typingEl = appendTyping();
 
     try {
       const res = await fetch('/chatbot/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
-        body: JSON.stringify({ message: text, history: history.slice(-10) }),
+        body: JSON.stringify({ message: text, history: priorHistory }),
       });
       const data = await res.json();
       typingEl.remove();
       const reply = data.response || 'Sorry, something went wrong.';
-      appendMsg(reply, 'bot');
       history.push({ role: 'assistant', content: reply });
+      await addBotReply(reply, data.followups, data.success);
     } catch {
       typingEl.remove();
       appendMsg('Network error. Please check your connection.', 'bot');
     }
 
     waiting = false;
+    sendBtn.disabled = false;
+    input.focus();
   }
 
-  sendBtn.addEventListener('click', send);
+  sendBtn.addEventListener('click', () => send());
+  // Starter and follow-up chips (follow-ups are added dynamically)
+  msgsEl.addEventListener('click', (e) => {
+    const chip = e.target.closest('.chat-suggestion');
+    if (chip) send(chip.textContent);
+  });
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
   });
@@ -800,6 +3393,12 @@ document.querySelectorAll('.mobile-link').forEach(a => {
     const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
     return v ? v[2] : '';
   }
+
+  // Small API so other features (command palette, pop-up) can open the chat or ask a question
+  window.saimChat = {
+    open: () => setOpen(true),
+    ask: (question) => { setOpen(true); send(question); },
+  };
 })();
 // Terminal typing logo
 (function() {
@@ -834,12 +3433,21 @@ document.querySelectorAll('.mobile-link').forEach(a => {
     setTimeout(type, SPEED);
   }
 
+  let lastI = 0;
   function render() {
+    // While typing forward, the newest letter gets a flash-in effect
+    const typed = text.slice(0, i);
+    const isNew = i > lastI;
+    lastI = i;
     el.innerHTML =
-      '<span style="color:var(--accent)">{</span>' +
-      '<span style="color:var(--text)">' + text.slice(0, i) + '</span>' +
-      (i === text.length ? '<span style="color:var(--accent)">};</span>' : '') +
-      '<span class="cursor">█</span>';
+      '<span aria-hidden="true" style="display:contents">' +
+      '<span class="logo-prompt">❯</span>' +
+      '<span class="logo-brace">{</span>' +
+      '<span class="logo-text">' + (isNew ? typed.slice(0, -1) : typed) + '</span>' +
+      (isNew ? '<span class="logo-new">' + typed.slice(-1) + '</span>' : '') +
+      (i === text.length ? '<span class="logo-brace close">};</span>' : '') +
+      '<span class="cursor"></span>' +
+      '</span>';
   }
 
   render();
@@ -848,84 +3456,862 @@ document.querySelectorAll('.mobile-link').forEach(a => {
 // ─────────────────────────────────────────────
 // CHAT WELCOME NOTIFICATION
 // ─────────────────────────────────────────────
-setTimeout(() => {
+(function () {
+  const SEEN_KEY = 'saimChatNotifSeen';
   const toggle = document.getElementById('chat-toggle');
   const win = document.getElementById('chat-window');
+  let notification = null;
+  let badge = null;
 
-  // Don't show if chat is already open
-  if (win.classList.contains('open')) return;
+  function seen() {
+    try { return sessionStorage.getItem(SEEN_KEY) === '1'; } catch { return false; }
+  }
 
-  const notification = document.createElement('div');
-  notification.id = 'chat-notification';
-  notification.style.cssText = `
-    position: fixed;
-    bottom: 100px;
-    right: 32px;
-    z-index: 199;
-    background: var(--bg2);
-    border: 1px solid rgba(0,229,255,0.25);
-    border-radius: 12px;
-    padding: 12px 16px;
-    width: 230px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-    animation: msgIn .3s ease;
-    cursor: pointer;
-  `;
-  notification.innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;"></div>
-        <span style="font-size:12px;font-weight:600;color:var(--accent);">Saim's AI Assistant</span>
-      </div>
-      <span id="chat-notif-close" style="
-        font-size:16px;
-        color:var(--muted);
-        cursor:pointer;
-        line-height:1;
-        padding:2px 6px;
-        border-radius:4px;
-        transition:all 0.2s;
-        display:inline-block;
-      ">&times;</span>
-    </div>
-    <p style="font-size:12px;color:var(--muted);margin:0;line-height:1.5;">👋 Hi! Ask me anything about Saim's skills, projects or experience!</p>
-    <p style="font-size:10px;color:var(--muted);margin-top:6px;opacity:0.6;">Click to chat</p>
-  `;
+  function markSeen() {
+    try { sessionStorage.setItem(SEEN_KEY, '1'); } catch { /* storage blocked — ignore */ }
+  }
 
-  notification.addEventListener('click', () => {
-    notification.remove();
-    win.classList.add('open');
-    document.getElementById('chat-input').focus();
-  });
+  // Called when the pop-up is closed, used, or the chat is opened any other way
+  window.dismissChatNotification = function () {
+    markSeen();
+    if (badge) { badge.remove(); badge = null; }
+    if (!notification) return;
+    const el = notification;
+    notification = null;
+    document.body.classList.remove('has-notif');
+    el.classList.add('leaving');
+    el.addEventListener('animationend', () => el.remove(), { once: true });
+  };
 
-  document.body.appendChild(notification);
+  // Only once per visit, and never on top of an open chat
+  if (seen()) return;
 
-  const closeBtn = document.getElementById('chat-notif-close');
-  closeBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    notification.remove();
-  });
-
-  closeBtn.addEventListener('mouseenter', () => {
-    closeBtn.style.transform = 'scale(1.4)';
-    closeBtn.style.color = 'var(--text)';
-  });
-
-  closeBtn.addEventListener('mouseleave', () => {
-    closeBtn.style.transform = 'scale(1)';
-    closeBtn.style.color = 'var(--muted)';
-  });
-
-  // Auto hide after 7 seconds
   setTimeout(() => {
-    if (document.getElementById('chat-notification')) {
-      notification.style.opacity = '0';
-      notification.style.transition = 'opacity 0.5s';
-      setTimeout(() => notification.remove(), 500);
-    }
-  }, 7000);
+    if (win.classList.contains('open') || seen()) return;
 
-}, 3000); // Shows after 3 seconds
+    const avatar = document.querySelector('.chat-avatar img').src;
+    notification = document.createElement('div');
+    notification.id = 'chat-notification';
+    notification.className = 'chat-notification';
+    notification.setAttribute('role', 'status');
+    notification.innerHTML = `
+      <div class="notif-head">
+        <div class="notif-avatar"><img src="${avatar}" alt="" /></div>
+        <div class="notif-title">
+          <strong>Saim's AI Assistant</strong>
+          <span>● Online</span>
+        </div>
+        <button class="notif-close" type="button" aria-label="Dismiss">&times;</button>
+      </div>
+      <div class="notif-bubble">
+        <span class="typing-dots" aria-label="typing"><i></i><i></i><i></i></span>
+      </div>
+      <button class="notif-cta" type="button">Chat now <span aria-hidden="true">→</span></button>
+      <div class="notif-timer"><span></span></div>
+    `;
+    document.body.appendChild(notification);
+    document.body.classList.add('has-notif');
+
+    badge = document.createElement('span');
+    badge.className = 'chat-badge';
+    badge.textContent = '1';
+    toggle.appendChild(badge);
+
+    // "Typing…" first, then the message
+    const bubble = notification.querySelector('.notif-bubble');
+    setTimeout(() => {
+      if (!bubble.isConnected) return;
+      bubble.innerHTML = '<span class="notif-text">👋 Hi! Ask me anything about Saim\'s skills, projects or experience!</span>';
+    }, 1300);
+
+    notification.addEventListener('click', () => window.saimChat.open());
+    notification.querySelector('.notif-close').addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.dismissChatNotification();
+    });
+    // Hides itself when the countdown bar runs out (the bar pauses on hover)
+    notification.querySelector('.notif-timer span').addEventListener('animationend', (e) => {
+      e.stopPropagation();
+      window.dismissChatNotification();
+    });
+  }, 3000);
+})();
+
+// ─────────────────────────────────────────────
+// TOAST
+// ─────────────────────────────────────────────
+// "Projects · Home", but just "Resume · Experience" when the type already names the page
+function typeLabel(it) {
+  return it.type.startsWith(it.page) ? it.type : it.type + ' · ' + it.page;
+}
+
+function showToast(message) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.setAttribute('role', 'status');
+  t.textContent = message;
+  document.body.appendChild(t);
+  setTimeout(() => {
+    t.classList.add('leaving');
+    t.addEventListener('animationend', () => t.remove(), { once: true });
+  }, 2200);
+}
+
+// ─────────────────────────────────────────────
+// SITE SEARCH + COMMAND PALETTE (Ctrl/⌘ + K)
+// ─────────────────────────────────────────────
+(function () {
+  const overlay = document.getElementById('cmdk');
+  const input   = document.getElementById('cmdk-input');
+  const list    = document.getElementById('cmdk-list');
+  const preview = document.getElementById('cmdk-preview');
+  const isMac   = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+  document.getElementById('cmdk-kbd').textContent = isMac ? '⌘ K' : 'Ctrl K';
+
+  const clean = (s) => (s || '').replace(/\s+/g, ' ').trim();
+  const norm  = (s) => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const slug  = (s) => norm(s).replace(/[^\w\s-]/g, '').trim().replace(/[\s_]+/g, '-').slice(0, 60) || 'item';
+  const esc   = (s) => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const EMOJI = /^\s*((?:\p{Extended_Pictographic}|\p{Emoji_Presentation})(?:️|‍(?:\p{Extended_Pictographic}|\p{Emoji_Presentation}))*)\s*/u;
+  const tagsOf = (el) => [...el.querySelectorAll('.tag')].map(t => clean(t.textContent));
+
+  // ── Extract searchable items from a page ──────
+  // Runs on the live page (to give items stable ids we can link to) and on fetched copies of the
+  // other pages (to build the index). Same DOM in, same ids out, so links always land on the item.
+  function extract(doc, path) {
+    const items = [];
+    const used = new Set();
+
+    function idFor(el, prefix, title) {
+      if (el.id) return el.id;
+      const base = prefix + '-' + slug(title);
+      let id = base, n = 2;
+      while (used.has(id) || doc.getElementById(id)) id = base + '-' + n++;
+      used.add(id);
+      el.id = id;
+      return id;
+    }
+
+    function add(el, prefix, data) {
+      if (!data.title) return;
+      const id = idFor(el, prefix, data.title);
+      el.classList.add('search-target');
+      items.push(Object.assign({ subtitle: '', text: '', tags: [] }, data, { url: path + '#' + id, page: data.page }));
+    }
+
+    // Homepage
+    if (doc.getElementById('projects')) {
+      const P = 'Home';
+      const about = doc.querySelector('#about .about-text');
+      if (about) add(about, 'about', { type: 'About', icon: '👋', page: P, title: 'About Saim',
+        text: [...about.querySelectorAll('p')].map(p => clean(p.textContent)).join(' ') });
+
+      doc.querySelectorAll('.project-card').forEach(el => add(el, 'project', {
+        type: 'Projects', page: P,
+        icon: clean(el.querySelector('.project-icon')?.textContent) || '🚀',
+        title: clean(el.querySelector('h3')?.textContent),
+        text: clean(el.querySelector('p')?.textContent),
+        tags: tagsOf(el),
+      }));
+
+      doc.querySelectorAll('.timeline-item').forEach(el => {
+        const role = clean(el.querySelector('.timeline-role')?.textContent);
+        const company = clean(el.querySelector('.timeline-company')?.textContent).replace(/^@\s*/, '');
+        const date = clean(el.querySelector('.timeline-date')?.textContent);
+        add(el, 'exp', {
+          type: 'Experience', icon: '💼', page: P, title: role, subtitle: company + ' · ' + date,
+          text: clean(el.querySelector('.timeline-desc')?.textContent) + ' ' +
+                [...el.querySelectorAll('.timeline-project')].map(p => clean(p.textContent)).join(' · '),
+          tags: tagsOf(el),
+        });
+        el.querySelectorAll('.timeline-project').forEach(p => {
+          const t = clean(p.textContent);
+          add(p, 'work', { type: 'Experience', icon: '🧩', page: P, title: t.split(' — ')[0],
+            subtitle: 'Work project · ' + company, text: t });
+        });
+      });
+
+      doc.querySelectorAll('.skill-group').forEach(el => add(el, 'skills', {
+        type: 'Skills', icon: '🧰', page: P, title: clean(el.querySelector('h3')?.textContent),
+        text: tagsOf(el).join(', '), tags: tagsOf(el),
+      }));
+
+      doc.querySelectorAll('.edu-card').forEach(el => add(el, 'edu', {
+        type: 'Education', icon: '🎓', page: P, title: clean(el.querySelector('h3')?.textContent),
+        subtitle: clean(el.querySelector('.school')?.textContent),
+        text: clean(el.querySelector('.period')?.textContent),
+      }));
+
+      doc.querySelectorAll('.contact-link').forEach(el => add(el, 'contact', {
+        type: 'Contact', icon: '✉️', page: P, title: clean(el.textContent), subtitle: 'Contact',
+      }));
+    }
+
+    // Resume
+    if (doc.querySelector('.resume-main')) {
+      const P = 'Resume';
+      const profile = doc.getElementById('profile');
+      if (profile) add(profile.querySelector('p') || profile, 'r', { type: 'Resume', icon: '📄', page: P,
+        title: 'Profile', text: clean(profile.querySelector('p')?.textContent) });
+
+      doc.querySelectorAll('.resume-row').forEach(row => {
+        const section = clean(row.closest('.resume-section')?.querySelector('h2')?.textContent);
+        const title = clean(row.querySelector('h3')?.textContent);
+        const org = clean(row.querySelector('.org')?.textContent);
+        const date = clean(row.querySelector('.resume-row-right')?.textContent);
+        const icon = section === 'Education' ? '🎓' : section === 'Academic Projects' ? '🔬' : '💼';
+        add(row, 'r', {
+          type: 'Resume · ' + section, icon, page: P, title, subtitle: [org, date].filter(Boolean).join(' · '),
+          text: [clean(row.querySelector('.desc')?.textContent),
+                 ...[...row.querySelectorAll('.resume-list li')].map(li => clean(li.textContent))].join(' '),
+          tags: tagsOf(row),
+        });
+        // Individual highlights ("LawAI — Built a…") are linkable on their own
+        row.querySelectorAll('.resume-list li').forEach(li => {
+          const strong = li.querySelector('strong');
+          if (!strong) return;
+          add(li, 'r', { type: 'Resume · ' + section, icon: '⭐', page: P, title: clean(strong.textContent),
+            subtitle: title + (org ? ' · ' + org : ''), text: clean(li.textContent) });
+        });
+      });
+
+      doc.querySelectorAll('.resume-skills > div, .resume-langs > div').forEach(el => add(el, 'r', {
+        type: 'Resume · Skills', icon: '🧰', page: P, title: clean(el.querySelector('p')?.textContent),
+        text: tagsOf(el).join(', '), tags: tagsOf(el),
+      }));
+    }
+
+    // Blog list
+    doc.querySelectorAll('.blog-card-link').forEach(a => items.push({
+      type: 'Blog', icon: '✍️', page: 'Blog', url: new URL(a.getAttribute('href'), location.origin).pathname,
+      title: clean(a.querySelector('.blog-card-title')?.textContent),
+      subtitle: 'Blog post · ' + clean(a.querySelector('.blog-card-date')?.textContent),
+      text: clean(a.querySelector('.blog-card-excerpt')?.textContent), tags: tagsOf(a),
+    }));
+
+    // Blog post: each heading with the text that follows it
+    const body = doc.querySelector('.blog-body');
+    if (body) {
+      const postTitle = clean(doc.querySelector('.blog-title')?.textContent);
+      body.querySelectorAll('h2, h3').forEach(h => {
+        let text = '', n = h.nextElementSibling;
+        while (n && !/^H[1-3]$/.test(n.tagName)) { text += ' ' + n.textContent; n = n.nextElementSibling; }
+        const raw = clean(h.textContent);
+        const m = raw.match(EMOJI);
+        add(h, 'post', { type: 'Blog', icon: m ? m[1] : '📝', page: 'Blog',
+          title: raw.replace(EMOJI, ''), subtitle: postTitle, text: clean(text) });
+      });
+    }
+
+    return items;
+  }
+
+  // Give the current page's items their ids right away (so /#project-lawai style links work)
+  extract(document, window.location.pathname);
+
+  // ── Land on a search result ──────────────────
+  function reveal(id, smooth) {
+    let el;
+    try { el = document.getElementById(decodeURIComponent(id)); } catch { el = null; }
+    if (!el) return;
+    const target = el.closest('.blog-section') || el;
+    target.closest('.fade-up')?.classList.add('visible');
+    target.classList.add('visible');
+    target.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'center' });
+    target.classList.remove('search-hit');
+    void target.offsetWidth; // restart the glow animation
+    target.classList.add('search-hit');
+    setTimeout(() => target.classList.remove('search-hit'), 2800);
+  }
+
+  // Arriving from another page: wait for the page's own scripts (e.g. blog sections) first
+  if (window.location.hash.length > 1) {
+    window.addEventListener('load', () => setTimeout(() => reveal(window.location.hash.slice(1), false), 150));
+  }
+
+  // ── Build the site-wide index (once per visit) ─
+  const INDEX_KEY = 'saimSearchIndex:v1';
+  let index = null;
+  let indexing = null;
+
+  async function fetchDoc(url) {
+    const res = await fetch(url, { credentials: 'same-origin' });
+    if (!res.ok) throw new Error(url + ' ' + res.status);
+    return new DOMParser().parseFromString(await res.text(), 'text/html');
+  }
+
+  function buildIndex() {
+    if (index) return Promise.resolve(index);
+    if (indexing) return indexing;
+    try {
+      const cached = sessionStorage.getItem(INDEX_KEY);
+      if (cached) { index = JSON.parse(cached); return Promise.resolve(index); }
+    } catch { /* storage blocked — rebuild */ }
+
+    indexing = (async () => {
+      const pages = ['/', '/resume/', '/blog/'];
+      const docs = await Promise.all(pages.map(u => fetchDoc(u).catch(() => null)));
+      let items = [];
+      docs.forEach((d, i) => { if (d) items = items.concat(extract(d, pages[i])); });
+
+      // Every post linked from the blog page (capped to keep it quick)
+      const posts = docs[2] ? [...docs[2].querySelectorAll('.blog-card-link')]
+        .map(a => new URL(a.getAttribute('href'), location.origin).pathname).slice(0, 20) : [];
+      const postDocs = await Promise.all(posts.map(u => fetchDoc(u).catch(() => null)));
+      postDocs.forEach((d, i) => { if (d) items = items.concat(extract(d, posts[i])); });
+
+      const seen = new Set();
+      index = items.filter(it => !seen.has(it.url) && seen.add(it.url));
+      try { sessionStorage.setItem(INDEX_KEY, JSON.stringify(index)); } catch { /* ignore */ }
+      return index;
+    })().catch(() => (index = extract(document, window.location.pathname)));
+    return indexing;
+  }
+
+  // Warm the index in the background once the page is idle
+  (window.requestIdleCallback || ((f) => setTimeout(f, 1500)))(() => buildIndex());
+
+  // ── Quick commands ───────────────────────────
+  const onHome = window.location.pathname === '/';
+  function goSection(id) {
+    const el = onHome && document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    else window.location.href = '/#' + id;
+  }
+
+  const EMAIL = 'ah.saim786@gmail.com';
+  const COMMANDS = [
+    { group: 'Jump to', icon: '👋', label: 'About',      hint: 'Home', run: () => goSection('about') },
+    { group: 'Jump to', icon: '🧰', label: 'Skills',     hint: 'Home', run: () => goSection('skills') },
+    { group: 'Jump to', icon: '🚀', label: 'Projects',   hint: 'Home', run: () => goSection('projects') },
+    { group: 'Jump to', icon: '💼', label: 'Experience', hint: 'Home', run: () => goSection('experience') },
+    { group: 'Jump to', icon: '🎓', label: 'Education',  hint: 'Home', run: () => goSection('education') },
+    { group: 'Jump to', icon: '✉️', label: 'Contact',    hint: 'Home', run: () => goSection('contact') },
+    { group: 'Pages',   icon: '🏠', label: 'Home',       hint: '/',       run: () => { window.location.href = '/'; } },
+    { group: 'Pages',   icon: '📄', label: 'Resume',     hint: '/resume', run: () => { window.location.href = '/resume/'; } },
+    { group: 'Pages',   icon: '✍️', label: 'Blog',       hint: '/blog',   run: () => { window.location.href = '/blog/'; } },
+    { group: 'Actions', icon: '🤖', label: "Chat with Saim's AI assistant", hint: 'Open', run: () => window.saimChat.open() },
+    { group: 'Actions', icon: '🌓', label: 'Toggle light / dark mode', hint: 'Theme', run: () => window.toggleTheme(window.innerWidth - 150, 32) },
+    { group: 'Actions', icon: '⬇️', label: 'Download CV', hint: 'PDF', run: () => {
+        const a = document.createElement('a');
+        a.href = '{% static "portfolio/files/SaimAhmadCV.pdf" %}';
+        a.download = 'SaimAhmad-CV.pdf';
+        document.body.appendChild(a); a.click(); a.remove();
+      } },
+    { group: 'Actions', icon: '📋', label: 'Copy email address', hint: EMAIL, run: async () => {
+        try { await navigator.clipboard.writeText(EMAIL); showToast('✓ Email copied to clipboard'); }
+        catch { window.location.href = 'mailto:' + EMAIL; }
+      } },
+    { group: 'Actions', icon: '📧', label: 'Send an email', hint: 'mailto', run: () => { window.location.href = 'mailto:' + EMAIL; } },
+    { group: 'Links',   icon: '🐙', label: 'GitHub',   hint: 'github.com/SaimiAh', run: () => window.open('https://github.com/SaimiAh', '_blank', 'noopener') },
+    { group: 'Links',   icon: '🔗', label: 'LinkedIn', hint: 'linkedin.com/in/saimahmad-', run: () => window.open('https://linkedin.com/in/saimahmad-/', '_blank', 'noopener') },
+  ];
+
+  // ── Search ───────────────────────────────────
+  function score(item, words) {
+    const title = norm(item.title), sub = norm(item.subtitle), text = norm(item.text);
+    const tags = item.tags.map(norm);
+    let total = 0;
+    for (const w of words) {
+      let s = 0;
+      if (title === w) s = 14;
+      else if (new RegExp('(^|\\W)' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).test(title)) s = 10;
+      else if (title.includes(w)) s = 7;
+      else if (tags.some(t => t.includes(w))) s = 6;
+      else if (sub.includes(w)) s = 4;
+      else if (text.includes(w)) s = 2;
+      if (!s) return 0; // every word must match somewhere
+      total += s;
+    }
+    return total;
+  }
+
+  function markText(text, words) {
+    if (!words.length) return esc(text);
+    const re = new RegExp('(' + words.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')', 'gi');
+    return text.split(re).map((part, i) => i % 2 ? '<mark>' + esc(part) + '</mark>' : esc(part)).join('');
+  }
+
+  function snippet(text, words, len = 120) {
+    const low = norm(text);
+    let at = -1;
+    words.forEach(w => { const i = low.indexOf(w); if (i >= 0 && (at < 0 || i < at)) at = i; });
+    if (at < 0) return text.length > len ? text.slice(0, len) + '…' : text;
+    const start = Math.max(0, at - 40);
+    return (start ? '…' : '') + text.slice(start, start + len) + (start + len < text.length ? '…' : '');
+  }
+
+  let results = [];
+  let active = 0;
+  let words = [];
+  let lastFocus = null;
+
+  function compute(query) {
+    words = norm(query).split(/\s+/).filter(Boolean);
+    const out = [];
+
+    if (words.length && index) {
+      const scored = index.map(it => ({ it, s: score(it, words) })).filter(x => x.s > 0);
+      // Group by type; groups ordered by their best match, max 6 per group
+      const groups = new Map();
+      scored.sort((a, b) => b.s - a.s).forEach(({ it }) => {
+        if (!groups.has(it.type)) groups.set(it.type, []);
+        if (groups.get(it.type).length < 6) groups.get(it.type).push(it);
+      });
+      groups.forEach((items, type) => items.forEach(it => out.push({ kind: 'item', group: type, item: it })));
+    }
+
+    const cmds = words.length
+      ? COMMANDS.filter(c => words.every(w => norm(c.label + ' ' + c.group + ' ' + c.hint).includes(w)))
+      : COMMANDS;
+    cmds.forEach(c => out.push({ kind: 'cmd', group: c.group, cmd: c }));
+
+    if (words.length) {
+      const q = query.trim();
+      out.push({ kind: 'cmd', group: 'Ask AI', cmd: {
+        icon: '✨', label: 'Ask the AI: “' + q + '”', hint: 'AI', run: () => window.saimChat.ask(q),
+      } });
+    }
+    return out;
+  }
+
+  function render() {
+    list.textContent = '';
+    const query = input.value.trim();
+
+    if (!query) {
+      // Suggestions: real project names from the index
+      const picks = (index || []).filter(it => it.type === 'Projects').slice(0, 5).map(it => it.title);
+      if (picks.length) {
+        const wrap = document.createElement('div');
+        wrap.className = 'cmdk-suggest';
+        wrap.innerHTML = '<span class="cmdk-suggest-label">Try</span>';
+        picks.forEach(p => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'cmdk-chip';
+          b.textContent = p.split(' — ')[0];
+          b.addEventListener('click', () => { input.value = b.textContent; update(); input.focus(); });
+          wrap.appendChild(b);
+        });
+        list.appendChild(wrap);
+      }
+    }
+
+    if (query && !index) {
+      list.insertAdjacentHTML('beforeend',
+        '<div class="cmdk-loading"><span></span><span></span><span></span> Indexing the site…</div>');
+    }
+
+    let group = null;
+    results.forEach((r, i) => {
+      if (r.group !== group) {
+        group = r.group;
+        const g = document.createElement('div');
+        g.className = 'cmdk-group';
+        g.textContent = group;
+        list.appendChild(g);
+      }
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cmdk-item' + (i === active ? ' active' : '');
+      btn.setAttribute('role', 'option');
+      btn.setAttribute('aria-selected', i === active);
+      if (r.kind === 'item') {
+        const it = r.item;
+        btn.innerHTML =
+          '<span class="cmdk-icon" aria-hidden="true">' + esc(it.icon) + '</span>' +
+          '<span class="cmdk-main"><span class="cmdk-label">' + markText(it.title, words) + '</span>' +
+          '<span class="cmdk-snippet">' + markText(snippet(it.text || it.subtitle, words), words) + '</span></span>' +
+          '<span class="cmdk-page">' + esc(it.page) + '</span>';
+      } else {
+        const c = r.cmd;
+        btn.innerHTML =
+          '<span class="cmdk-icon" aria-hidden="true">' + esc(c.icon) + '</span>' +
+          '<span class="cmdk-main"><span class="cmdk-label">' + esc(c.label) + '</span></span>' +
+          '<span class="cmdk-hint">' + esc(c.hint) + '</span>';
+      }
+      btn.addEventListener('mousemove', () => { if (active !== i) { active = i; highlight(); } });
+      btn.addEventListener('click', () => select(i));
+      list.appendChild(btn);
+    });
+
+    if (!results.length) list.insertAdjacentHTML('beforeend', '<div class="cmdk-empty">No results</div>');
+    renderPreview();
+  }
+
+  function renderPreview() {
+    const r = results[active];
+    if (!r) { preview.innerHTML = ''; return; }
+    if (r.kind === 'cmd') {
+      preview.innerHTML =
+        '<div class="pv-icon">' + esc(r.cmd.icon) + '</div>' +
+        '<p class="pv-type">' + esc(r.group) + '</p>' +
+        '<h3 class="pv-title">' + esc(r.cmd.label) + '</h3>' +
+        '<p class="pv-sub">' + esc(r.cmd.hint) + '</p>' +
+        '<div class="pv-actions"><button type="button" class="pv-btn primary" data-act="go">Open <kbd>↵</kbd></button></div>';
+    } else {
+      const it = r.item;
+      preview.innerHTML =
+        '<div class="pv-icon">' + esc(it.icon) + '</div>' +
+        '<p class="pv-type">' + esc(typeLabel(it)) + '</p>' +
+        '<h3 class="pv-title">' + markText(it.title, words) + '</h3>' +
+        (it.subtitle ? '<p class="pv-sub">' + markText(it.subtitle, words) + '</p>' : '') +
+        (it.tags.length ? '<div class="pv-tags">' + it.tags.map(t => '<span class="tag">' + markText(t, words) + '</span>').join('') + '</div>' : '') +
+        (it.text ? '<p class="pv-text">' + markText(it.text, words) + '</p>' : '') +
+        '<div class="pv-actions">' +
+          '<button type="button" class="pv-btn primary" data-act="go">Go to it <kbd>↵</kbd></button>' +
+          '<button type="button" class="pv-btn" data-act="ask">✨ Ask AI about this <kbd>⇧↵</kbd></button>' +
+        '</div>';
+    }
+    preview.querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', () =>
+      b.dataset.act === 'ask' ? askAbout(active) : select(active)));
+  }
+
+  function highlight() {
+    list.querySelectorAll('.cmdk-item').forEach((el, i) => {
+      el.classList.toggle('active', i === active);
+      el.setAttribute('aria-selected', i === active);
+      if (i === active) el.scrollIntoView({ block: 'nearest' });
+    });
+    renderPreview();
+  }
+
+  function update() {
+    results = compute(input.value);
+    active = 0;
+    render();
+  }
+
+  function open() {
+    lastFocus = document.activeElement;
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    input.value = '';
+    update();
+    setTimeout(() => input.focus(), 30);
+    // Refresh results once the index is ready (first open only)
+    if (!index) buildIndex().then(() => { if (overlay.classList.contains('open')) update(); });
+  }
+
+  function close() {
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  function select(i) {
+    const r = results[i];
+    if (!r) return;
+    close();
+    setTimeout(() => {
+      if (r.kind === 'cmd') return r.cmd.run();
+      const url = new URL(r.item.url, location.origin);
+      if (url.pathname === window.location.pathname && url.hash) {
+        history.replaceState(null, '', url.hash);
+        reveal(url.hash.slice(1), true);
+      } else {
+        window.location.href = r.item.url;
+      }
+    }, 60);
+  }
+
+  function askAbout(i) {
+    const r = results[i];
+    if (!r) return;
+    close();
+    const q = r.kind === 'item'
+      ? 'Tell me about ' + r.item.title + (r.item.subtitle ? ' (' + r.item.subtitle + ')' : '')
+      : input.value.trim();
+    if (q) setTimeout(() => window.saimChat.ask(q), 60);
+  }
+
+  document.getElementById('cmdk-open').addEventListener('click', open);
+  overlay.addEventListener('mousedown', (e) => { if (e.target === overlay) close(); });
+  input.addEventListener('input', update);
+  input.addEventListener('keydown', (e) => {
+    if (!results.length) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); active = (active + 1) % results.length; highlight(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); active = (active - 1 + results.length) % results.length; highlight(); }
+    else if (e.key === 'Enter' && e.shiftKey) { e.preventDefault(); askAbout(active); }
+    else if (e.key === 'Enter') { e.preventDefault(); select(active); }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      overlay.classList.contains('open') ? close() : open();
+    } else if (e.key === 'Escape' && overlay.classList.contains('open')) {
+      e.stopPropagation();
+      close();
+    }
+  }, true);
+
+  // Shared with the project pop-up
+  window.saimSearch = { buildIndex, reveal, norm };
+})();
+
+// ─────────────────────────────────────────────
+// LIGHT / DARK THEME
+// ─────────────────────────────────────────────
+(function () {
+  const root = document.documentElement;
+  const btn = document.getElementById('theme-toggle');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function label() {
+    btn.setAttribute('aria-label', root.dataset.theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+  }
+
+  function apply(theme) {
+    if (theme === 'light') root.dataset.theme = 'light';
+    else delete root.dataset.theme;
+    try { localStorage.setItem('theme', theme); } catch { /* storage blocked — ignore */ }
+    label();
+    window.dispatchEvent(new CustomEvent('themechange', { detail: { light: theme === 'light' } }));
+  }
+
+  // The new theme spreads out in a circle from (x, y) where supported
+  // The intended theme is tracked here, so rapid clicks land correctly even when the
+  // browser skips overlapping transitions
+  let target = root.dataset.theme === 'light' ? 'light' : 'dark';
+
+  window.toggleTheme = function (x, y) {
+    target = target === 'light' ? 'dark' : 'light';
+    const flip = () => apply(target);
+    if (!document.startViewTransition || reduceMotion) { flip(); return; }
+    root.classList.add('theme-switching');
+    const transition = document.startViewTransition(flip);
+    transition.ready.then(() => {
+      const r = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+      root.animate(
+        { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
+        { duration: 700, easing: 'cubic-bezier(.4,0,.2,1)', pseudoElement: '::view-transition-new(root)' }
+      );
+    }).catch(() => {});
+    transition.finished.finally(() => root.classList.remove('theme-switching'));
+  };
+
+  btn.addEventListener('click', () => {
+    const r = btn.getBoundingClientRect();
+    window.toggleTheme(r.left + r.width / 2, r.top + r.height / 2);
+  });
+  label();
+})();
+
+// ─────────────────────────────────────────────
+// 3D PROJECT POP-UP
+// ─────────────────────────────────────────────
+(function () {
+  const modal = document.getElementById('project-modal');
+  const cards = document.querySelectorAll('.project-card');
+  if (!modal || !cards.length) return;
+
+  const card    = modal.querySelector('.pm-card');
+  const els = {
+    icon: modal.querySelector('.pm-icon'), title: modal.querySelector('#pm-title'),
+    tags: modal.querySelector('.pm-tags'), desc: modal.querySelector('.pm-desc'),
+    related: modal.querySelector('.pm-related-list'), relatedWrap: modal.querySelector('.pm-related'),
+  };
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointer  = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const esc = (s) => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const alnum = (s) => window.saimSearch.norm(s).replace(/[^a-z0-9]/g, '');
+  let current = null, sourceCard = null, lastFocus = null;
+
+  // Every card becomes clickable, with a small hint
+  cards.forEach(c => {
+    c.setAttribute('tabindex', '0');
+    c.setAttribute('role', 'button');
+    c.setAttribute('aria-label', 'Open details: ' + c.querySelector('h3').textContent.trim());
+    c.insertAdjacentHTML('beforeend', '<span class="project-more" aria-hidden="true">Details <span>↗</span></span>');
+    c.addEventListener('click', () => open(c));
+    c.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(c); } });
+  });
+
+  // Other places on the site that mention this project (via the site search index)
+  function findRelated(index, project) {
+    const key = alnum(project.title.split(' — ')[0]);
+    const word = new RegExp('(^|[^a-z0-9])' + window.saimSearch.norm(project.title.split(' — ')[0]).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([^a-z0-9]|$)');
+    const own = '#' + project.id;
+    const byTitle = [], byText = [];
+    index.forEach(it => {
+      if (it.url.endsWith(own) || it.type === 'Projects' || it.type === 'Blog') return;
+      const t = alnum(it.title.split(' — ')[0]);
+      if (t === key || (key.length >= 4 && word.test(window.saimSearch.norm(it.title)))) byTitle.push(it);
+      else if (word.test(window.saimSearch.norm(it.text))) byText.push(it);
+    });
+    return byTitle.concat(byText).slice(0, 5);
+  }
+
+  function renderRelated(items) {
+    if (!items.length) { els.relatedWrap.hidden = true; return; }
+    els.relatedWrap.hidden = false;
+    els.related.innerHTML = items.map((it, i) =>
+      '<button type="button" class="pm-rel" data-i="' + i + '" style="--d:' + (i * 70) + 'ms">' +
+        '<span class="pm-rel-icon">' + esc(it.icon) + '</span>' +
+        '<span class="pm-rel-main">' +
+          '<span class="pm-rel-type">' + esc(typeLabel(it)) + '</span>' +
+          '<span class="pm-rel-title">' + esc(it.title) + (it.subtitle ? ' <em>' + esc(it.subtitle) + '</em>' : '') + '</span>' +
+          (it.text ? '<span class="pm-rel-text">' + esc(it.text) + '</span>' : '') +
+        '</span>' +
+        '<span class="pm-rel-go">View →</span>' +
+      '</button>').join('');
+    els.related.querySelectorAll('.pm-rel').forEach(b => b.addEventListener('click', () => {
+      const it = items[+b.dataset.i];
+      const url = new URL(it.url, location.origin);
+      close();
+      setTimeout(() => {
+        if (url.pathname === location.pathname) { history.replaceState(null, '', url.hash); window.saimSearch.reveal(url.hash.slice(1), true); }
+        else window.location.href = it.url;
+      }, 250);
+    }));
+  }
+
+  function open(c) {
+    sourceCard = c;
+    lastFocus = document.activeElement;
+    current = {
+      id: c.id,
+      icon: c.querySelector('.project-icon').textContent.trim(),
+      title: c.querySelector('h3').textContent.trim(),
+      desc: c.querySelector('p').textContent.trim(),
+      tags: [...c.querySelectorAll('.tag')].map(t => t.textContent.trim()),
+    };
+    els.icon.textContent = current.icon;
+    els.title.textContent = current.title;
+    els.desc.textContent = current.desc;
+    els.tags.innerHTML = current.tags.map(t => '<span class="tag">' + esc(t) + '</span>').join('');
+    els.related.innerHTML = '<div class="pm-loading"><span></span><span></span><span></span></div>';
+    els.relatedWrap.hidden = false;
+
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.documentElement.style.overflow = 'hidden';
+    card.scrollTop = 0;
+
+    // Fly out of the clicked card in 3D
+    if (!reduceMotion) {
+      flyFrom(c, 'rotateY(-28deg) rotateX(12deg)');
+      void card.offsetWidth; // commit the start position before transitioning
+      card.style.transition = 'transform .65s cubic-bezier(.22,1.2,.36,1), opacity .35s ease';
+      card.style.transform = '';
+      card.style.opacity = '';
+      clearTimeout(card._t);
+      card._t = setTimeout(() => { card.style.transition = ''; }, 700); // back to the quick tilt transition
+    }
+    setTimeout(() => modal.querySelector('.pm-close').focus(), 50);
+
+    window.saimSearch.buildIndex().then(index => {
+      if (current && current.id === c.id) renderRelated(findRelated(index, current));
+    }).catch(() => renderRelated([]));
+  }
+
+  function close() {
+    if (!modal.classList.contains('open')) return;
+    const finish = () => {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.documentElement.style.overflow = '';
+      card.style.removeProperty('--rx'); card.style.removeProperty('--ry');
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+      current = null;
+    };
+    if (reduceMotion || !sourceCard) return finish();
+    // Fly back into the card it came from, then reset the inline styles while hidden
+    modal.classList.add('closing');
+    card.style.transition = 'transform .38s cubic-bezier(.4,0,.6,1), opacity .38s ease';
+    flyFrom(sourceCard, 'rotateY(20deg) rotateX(-8deg)', 0);
+    clearTimeout(card._t);
+    card._t = setTimeout(() => {
+      modal.classList.remove('closing');
+      finish();
+      card.style.transition = 'none';
+      card.style.transform = '';
+      card.style.opacity = '';
+      void card.offsetWidth;
+      card.style.transition = '';
+    }, 400);
+  }
+
+  // Positions the pop-up card over a project card (used as the start/end of the 3D flight)
+  function flyFrom(src, rotation, opacity = 0.2) {
+    if (opacity) card.style.transition = 'none';
+    card.style.transform = '';
+    const from = src.getBoundingClientRect(), to = card.getBoundingClientRect();
+    const dx = (from.left + from.width / 2) - (to.left + to.width / 2);
+    const dy = (from.top + from.height / 2) - (to.top + to.height / 2);
+    card.style.transform = `translate(${dx}px, ${dy}px) scale(${(from.width / to.width).toFixed(3)}) ${rotation}`;
+    card.style.opacity = String(opacity);
+  }
+
+  modal.querySelector('.pm-close').addEventListener('click', close);
+  modal.addEventListener('mousedown', (e) => { if (e.target === modal) close(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('open')) { e.stopPropagation(); close(); }
+  }, true);
+
+  modal.querySelector('[data-pm="ask"]').addEventListener('click', () => {
+    const title = current.title;
+    close();
+    setTimeout(() => window.saimChat.ask('Tell me more about the ' + title + ' project'), 420);
+  });
+  modal.querySelector('[data-pm="link"]').addEventListener('click', async () => {
+    const link = location.origin + '/#' + current.id;
+    try { await navigator.clipboard.writeText(link); showToast('🔗 Link to ' + current.title + ' copied'); }
+    catch { showToast(link); }
+  });
+
+  // The pop-up card tilts with the mouse
+  if (finePointer && !reduceMotion) {
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      card.style.setProperty('--ry', ((x - 0.5) * 6).toFixed(2) + 'deg');
+      card.style.setProperty('--rx', ((0.5 - y) * 6).toFixed(2) + 'deg');
+      card.style.setProperty('--mx', (x * 100).toFixed(1) + '%');
+      card.style.setProperty('--my', (y * 100).toFixed(1) + '%');
+    });
+    card.addEventListener('mouseleave', () => { card.style.setProperty('--rx', '0deg'); card.style.setProperty('--ry', '0deg'); });
+  }
+})();
+
+// ─────────────────────────────────────────────
+// BACK TO TOP + MAGNETIC BUTTONS
+// ─────────────────────────────────────────────
+(function () {
+  const btn  = document.getElementById('to-top');
+  const ring = document.getElementById('to-top-ring');
+  const CIRC = 2 * Math.PI * 20;
+  ring.style.strokeDasharray = CIRC;
+
+  function update() {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    const p = max > 0 ? window.scrollY / max : 0;
+    ring.style.strokeDashoffset = CIRC * (1 - p);
+    btn.classList.toggle('show', window.scrollY > 500);
+  }
+
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  // Main buttons lean toward the cursor (uses `translate` so it stacks with hover transforms)
+  const finePointer  = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!finePointer || reduceMotion) return;
+
+  document.querySelectorAll('.hero-ctas .btn, .nav-cta, .resume-download .btn, .blog-footer .btn').forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width / 2) * 0.25;
+      const y = (e.clientY - r.top - r.height / 2) * 0.35;
+      el.style.translate = x.toFixed(1) + 'px ' + y.toFixed(1) + 'px';
+    });
+    el.addEventListener('mouseleave', () => { el.style.translate = ''; });
+  });
+})();
 </script>
 
 {% block extra_js %}{% endblock %}

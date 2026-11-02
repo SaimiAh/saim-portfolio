@@ -22,5 +22,5 @@ services:
         fromDatabase:
           name: saim-portfolio-db
           property: connectionString
-      - key: ANTHROPIC_API_KEY
+      - key: GROQ_API_KEY
         sync: false   # Set this manually in the Render dashboard

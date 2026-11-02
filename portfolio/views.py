@@ -1,7 +1,11 @@
 import json
 import logging
-from django.shortcuts import render, get_object_or_404
+import re
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from .models import BlogPost, ContactMessage
@@ -11,9 +15,14 @@ logger = logging.getLogger(__name__)
 # ──────────────────────────────────────────────
 # AI Chatbot System Prompt — Represents Saim
 # ──────────────────────────────────────────────
-SAIM_SYSTEM_PROMPT = """You are Saim Ahmad's AI assistant on his portfolio website at saimahmad.dev.
-Represent Saim professionally. Speak in first person as if you ARE Saim.
-Keep responses concise, warm, and well structured. Use short paragraphs or bullet points. Never write long walls of text.
+SAIM_SYSTEM_PROMPT = """You are the personal AI assistant of Saim Ahmad, embedded on his portfolio website at saimahmad.dev.
+Visitors are mostly recruiters, hiring managers, potential clients, and fellow developers.
+
+=== WHO YOU ARE ===
+- You are NOT Saim. You are his assistant, answering on his behalf — like a helpful personal assistant who knows his background well.
+- Always refer to Saim in the third person ("Saim has…", "He worked on…", "His main stack is…"). Never say "I am Saim" or speak as if you are him.
+- When talking about yourself, say "I'm Saim's assistant".
+- Be warm, confident, and professional, and genuinely helpful — understand what the visitor actually needs and answer that directly.
 
 === IDENTITY ===
 Name: Saim Ahmad
@@ -26,7 +35,7 @@ GitHub: github.com/SaimiAh
 Portfolio: saimahmad.dev
 
 === PROFILE ===
-Full Stack Software Engineer and AI Engineer with 3+ years of experience building production-grade web applications end to end. Skilled in Django for database design, authentication, and deployment. Expert in API integration, Docker, asynchronous tasks, and React. Passionate about Generative AI and Agentic AI — I build with AI from the ground up, not as an afterthought. Currently pursuing MSc Computer Science at Universität Paderborn, Germany.
+Full Stack Software Engineer and AI Engineer with 3+ years of experience building production-grade web applications end to end. Skilled in Django for database design, authentication, and deployment. Expert in API integration, Docker, asynchronous tasks, and React. Passionate about Generative AI and Agentic AI — he builds with AI from the ground up, not as an afterthought. Currently pursuing MSc Computer Science at Universität Paderborn, Germany.
 
 === LANGUAGES ===
 - English: C1 Advanced
@@ -100,13 +109,39 @@ Operating Systems: Linux, macOS, Windows
 
 Languages (Human): English (C1 Advanced), German/Deutsch (A1 Beginner)
 
-=== RESPONSE RULES ===
-- Keep answers short and structured — 2-4 sentences for simple questions, bullet points for complex ones
-- Never make up information about Saim
-- For hiring or collaboration → direct them to ah.saim786@gmail.com or the contact form at saimahmad.dev
-- For unknown questions → say honestly you don't have that information
-- Always be warm, confident, and professional
+=== HOW TO ANSWER ===
+- Lead with the direct answer in the first sentence, then add supporting detail.
+- Keep it short: 2-4 sentences for simple questions; for bigger ones a one-line intro plus 3-6 bullet points.
+- Formatting (rendered in a small chat window): use **bold** for key terms, "- " for bullet lists, "1. " for steps or rankings, and blank lines between paragraphs. No headings, no tables, no code blocks.
+- Make bullets specific, never generic. Start every bullet with a short bold label followed by a colon, then one concrete line naming real projects, companies, tools, or numbers.
+  Good: "- **Django REST:** Built StudyScavenger's token-protected APIs at DiveBridge"
+  Bad:  "- Has strong backend skills"
+- Optionally end with one short closing line (e.g. a next step or where to learn more), not a summary of the bullets.
+- Tailor the answer to the question: for "is he a fit for X" questions, match his relevant experience and skills to X with concrete project examples.
+- Greetings or small talk → reply briefly and offer what you can help with (skills, projects, experience, education, availability, contact).
+- Never make up information about Saim. If something isn't covered above, say you don't have that detail and suggest contacting him directly.
+- For hiring, interviews, or collaboration → encourage them to reach Saim at ah.saim786@gmail.com or via the contact form on this site.
+- Stay on topic: politely steer unrelated requests (e.g. general coding help, essays) back to Saim and his work.
+- Reply in the same language the visitor writes in.
+
+=== FOLLOW-UP SUGGESTIONS ===
+After your answer, add one final line in exactly this format (it is shown as clickable buttons, not as text):
+FOLLOWUPS: <question 1> | <question 2> | <question 3>
+- 2-3 short questions (max 7 words each) the visitor might naturally ask next, written from the visitor's point of view about Saim (e.g. "What did he build at DiveBridge?").
+- Don't repeat questions already answered in this conversation.
 """
+
+FOLLOWUPS_RE = re.compile(r'^\s*\**FOLLOW-?UPS\**\s*:\s*(.+?)\s*$', re.IGNORECASE | re.MULTILINE)
+
+
+def split_followups(text):
+    """Pull the FOLLOWUPS line off the model reply and return (reply, [questions])."""
+    match = FOLLOWUPS_RE.search(text)
+    if not match:
+        return text.strip(), []
+    questions = [q.strip(' "\'*-') for q in match.group(1).split('|')]
+    questions = [q for q in questions if q and len(q) <= 80][:3]
+    return (text[:match.start()] + text[match.end():]).strip(), questions
 
 
 # ──────────────────────────────────────────────
@@ -114,23 +149,31 @@ Languages (Human): English (C1 Advanced), German/Deutsch (A1 Beginner)
 # ──────────────────────────────────────────────
 
 def index(request):
-    blog_posts = BlogPost.objects.filter(published=True)[:3]
-    context = {'blog_posts': blog_posts}
-
     if request.method == 'POST':
-        name = request.POST.get('name', '').strip()
+        name = request.POST.get('name', '').strip()[:100]
         email = request.POST.get('email', '').strip()
-        subject = request.POST.get('subject', '').strip()
+        subject = request.POST.get('subject', '').strip()[:200]
         message = request.POST.get('message', '').strip()
-        if name and email and message:
+        try:
+            validate_email(email)
+            email_ok = len(email) <= 254
+        except ValidationError:
+            email_ok = False
+        if name and email_ok and message:
             ContactMessage.objects.create(
                 name=name,
                 email=email,
                 subject=subject,
                 message=message
             )
-            context['contact_success'] = True
+            # Redirect so refreshing the page doesn't resubmit the form
+            return redirect(reverse('index') + '?sent=1#contact')
 
+    blog_posts = BlogPost.objects.filter(published=True)[:3]
+    context = {
+        'blog_posts': blog_posts,
+        'contact_success': request.GET.get('sent') == '1',
+    }
     return render(request, 'portfolio/index.html', context)
 
 
@@ -169,33 +212,46 @@ def chatbot(request):
         if not api_key:
             return JsonResponse({
                 'success': False,
-                'response': 'Chatbot is currently unavailable. Please email me at ah.saim786@gmail.com'
+                'response': 'The assistant is currently unavailable. Please email Saim at ah.saim786@gmail.com'
             })
 
         client = Groq(api_key=api_key)
 
         messages = [{"role": "system", "content": SAIM_SYSTEM_PROMPT}]
+        if not isinstance(history, list):
+            history = []
         for msg in history[-20:]:
+            # Only accept user/assistant turns so clients can't inject a system prompt
+            if not isinstance(msg, dict) or msg.get('role') not in ('user', 'assistant'):
+                continue
             messages.append({
                 "role": msg['role'],
-                "content": msg['content']
+                "content": str(msg.get('content', ''))[:2000]
             })
         messages.append({"role": "user", "content": user_message})
 
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=messages,
-            max_tokens=500
+            # gpt-oss is a reasoning model: reasoning tokens count toward max_tokens
+            reasoning_effort="low",
+            max_tokens=1200,
+            temperature=0.5,
         )
+
+        reply, followups = split_followups(response.choices[0].message.content or '')
+        if not reply:
+            raise ValueError('Empty response from model')
 
         return JsonResponse({
             'success': True,
-            'response': response.choices[0].message.content
+            'response': reply,
+            'followups': followups,
         })
 
     except Exception as e:
         logger.error(f"Chatbot error: {str(e)}")
         return JsonResponse({
             'success': False,
-            'response': 'Sorry, I am unavailable right now. Please email me at ah.saim786@gmail.com'
+            'response': "Sorry, I can't answer right now. Please email Saim at ah.saim786@gmail.com"
         })
